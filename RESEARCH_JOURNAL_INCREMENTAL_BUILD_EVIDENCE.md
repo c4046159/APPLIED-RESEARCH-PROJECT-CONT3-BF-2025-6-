@@ -28,6 +28,8 @@ Relevant commits include:
 - `703f0ea` - Replace Mistral dependency with Cohere for Chatbot B.
 - `11191c2` - Use Cohere Command A Plus for Chatbot B.
 - `3f45b8a` - Document two-chatbot scope decision and Cohere candidate.
+- `0ba34a2` - Fix Cohere response parsing for thinking and text blocks.
+- `03f7428` - Document Cohere structured response parsing result.
 
 ## Validation method
 
@@ -79,16 +81,21 @@ This simple test was appropriate because it isolated provider connectivity befor
 
 ### Chatbot B attempt 5 - Cohere
 
-- Cohere selected because trial-key limits are published and appear sufficient for the planned two-chatbot experiment.
+- Cohere was selected because trial-key limits are published and appear sufficient for the planned two-chatbot experiment.
 - Current documented trial limits include 20 Chat requests/minute and 1,000 API calls/month.
-- Chatbot B has been changed to `command-a-plus-05-2026` through the official Cohere Python SDK.
-- Validation result: pending the next deployment test with `What is a PLC?`.
+- Chatbot B was changed to `command-a-plus-05-2026` through the official Cohere Python SDK.
+- The validation prompt reached Cohere and produced a structured response, confirming that the API key, request and model call were functioning.
+- The first parser assumed `response.message.content[0]` would always be a text item and attempted to access `.text` directly.
+- Command A+ returned a `thinking` block first, producing: `'ThinkingAssistantMessageResponseContentItem' object has no attribute 'text'`.
+- This result is a parsing issue rather than an API/provider failure.
+- The code was corrected to loop through the returned content and select the item where `content.type == "text"`.
+- Result: API connectivity confirmed; final display validation pending a repeat test.
 
 ## Interpretation
 
-The incremental build revealed that multi-model comparison depends on more than correct Python integration. External API availability, authentication policies, free-tier quotas and upstream-provider reliability directly affect whether an experimental system can be reproduced and tested consistently. This is relevant to the research because a fair comparison requires all selected chatbot systems to be available under sufficiently similar and repeatable testing conditions.
+The incremental build revealed that multi-model comparison depends on more than correct Python integration. External API availability, authentication policies, free-tier quotas, structured response formats and upstream-provider reliability directly affect whether an experimental system can be reproduced and tested consistently. This is relevant to the research because a fair comparison requires all selected chatbot systems to be available under sufficiently similar and repeatable testing conditions.
 
-The failed integrations are therefore meaningful validation evidence rather than wasted development. They led to improvements in error handling and refined the provider-selection criteria: the final systems must offer stable, documented and genuinely usable no-payment access for the expected experimental workload.
+The failed integrations are therefore meaningful validation evidence rather than wasted development. They led to improvements in error handling, response parsing and provider-selection criteria. The Cohere test is particularly useful because it separates successful API/model execution from local response-processing logic: the model responded, but the application initially interpreted the structured response incorrectly.
 
 ## Scope decision: two final chatbots rather than three
 
@@ -98,12 +105,12 @@ This does not remove the comparative nature of the study. A controlled A-versus-
 
 ## Deviations from the original plan
 
-The original plan assumed that several provider APIs could be integrated by following their public documentation and supplying valid credentials. In practice, multiple candidate routes had to be rejected for operational reasons. The original three-chatbot concept was therefore reduced to a two-chatbot design so that the final experiment remains feasible and reproducible.
+The original plan assumed that several provider APIs could be integrated by following their public documentation and supplying valid credentials. In practice, multiple candidate routes had to be rejected for operational reasons. The original three-chatbot concept was therefore reduced to a two-chatbot design so that the final experiment remains feasible and reproducible. The Cohere implementation also required a minor deviation from the initial parser because the current reasoning-capable model can return a thinking block before the final text.
 
 ## Next steps before Week 12
 
-1. Validate Cohere as Chatbot B using the same simple functional prompt.
-2. Once Chatbot B returns reliably, freeze both final provider/model choices.
+1. Retest Cohere Chatbot B with the corrected text-block parser using the same `What is a PLC?` prompt.
+2. If the answer displays correctly, freeze Gemini and Cohere as the two final provider/model choices.
 3. Introduce consistent response-time logging and common validation prompts for both systems.
 4. Connect both final chatbots to the same research-safe engineering-document source.
 5. Run repeated controlled tests and retain outputs for formal comparison.
@@ -120,12 +127,12 @@ I used a basic functional connectivity test before introducing more complex eval
 
 ### Results obtained
 
-Chatbot A, using Gemini 3.5 Flash-Lite, responded successfully after an earlier Gemini model returned a temporary HTTP 503 high-demand error. Several alternatives were evaluated for Chatbot B. Groq repeatedly returned HTTP 401 `Invalid API Key` and the available account setup did not satisfy the project's no-payment requirement. OpenRouter was tested with two free models; one returned a response without the expected `choices` field and the other returned `Provider returned error`. Mistral authenticated successfully, but the first test returned HTTP 429 `Rate limit exceeded`. Cohere was therefore selected as the next candidate because its trial limits are explicitly published and appear sufficient for the planned test workload.
+Chatbot A, using Gemini 3.5 Flash-Lite, responded successfully after an earlier Gemini model returned a temporary HTTP 503 high-demand error. Several alternatives were evaluated for Chatbot B. Groq repeatedly returned HTTP 401 `Invalid API Key`; OpenRouter produced two separate provider-side failures; and Mistral authenticated successfully but returned HTTP 429 `Rate limit exceeded`. Cohere was then tested using Command A+. The request successfully reached the model, but the application initially attempted to read the first response item as plain text. Command A+ returned a structured `thinking` block before the text response, producing a Python attribute error. The parser was corrected to select the content item whose type is `text`.
 
 ### Interpretation
 
-These results showed that multi-model integration is constrained not only by Python implementation but also by service availability, authentication and free-tier quotas. This directly affects experimental reproducibility. The evidence also justified reducing the planned comparison from three chatbots to two, retaining a valid comparative design while reducing provider-related risk and allowing more rigorous repeated testing.
+These results showed that multi-model integration is constrained not only by Python implementation but also by service availability, authentication, quotas and response structure. The Cohere test was important because it confirmed that the API call itself worked and isolated the remaining problem to local parsing logic. The evidence also justified reducing the planned comparison from three chatbots to two, retaining a valid comparative design while reducing provider-related risk.
 
 ### Next steps
 
-The next step is to validate Cohere as Chatbot B. If stable, both provider/model choices will be frozen before adding shared engineering-document retrieval, response-time measurement and formal repeated comparison tests.
+The next step is to retest Cohere with the corrected parser. If successful, Gemini and Cohere will be frozen as the two final systems before adding shared engineering-document retrieval, response-time measurement and formal repeated comparison tests.
