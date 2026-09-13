@@ -94,10 +94,24 @@ The provider problems also caused a useful methodological refinement. The final 
 
 The successful Cohere retest closes this incremental build cycle with both final chatbot providers operational.
 
+## 13 September 2026 - User interface refinement
+
+- The Streamlit interface was polished after both final model integrations had been frozen.
+- The page now displays the formal module title `APPLIED RESEARCH PROJECT (CONT3 BF-2025/6)` and module code `55-709708-BF-20256`.
+- Student identification information was added to the prototype as requested.
+- A short project overview and usage explanation were added so that supervisors, markers and other users can understand the purpose of the prototype and how to run a simple A-versus-B comparison.
+- A non-commercial academic research disclaimer was added. It explains that the prototype depends on third-party AI services and remains subject to their individual terms, availability, usage limits and policies, and that the project is not operated for commercial profit.
+- Basic provider/model information and operational status are displayed consistently for both Chatbot A and Chatbot B.
+- Each interaction area is grouped inside a bordered Streamlit container.
+- Model outputs are now displayed using Streamlit's native assistant chat-message presentation rather than plain text output.
+- The underlying Gemini and Cohere API calls were deliberately left unchanged so that this presentation refinement does not alter the validated experimental provider configuration.
+- Commit `0ecdcf7` records the interface update (`Polish research prototype interface and add project information`).
+
 ## Current prototype status
 
 - Chatbot A: Google Gemini 3.5 Flash-Lite - working and frozen for the experiment.
 - Chatbot B: Cohere Command A+ - working and frozen for the experiment.
 - Chatbot C: removed from final scope.
 - Final comparison scope: two chatbot systems.
+- User interface: research/module identity, student information, instructions, disclaimer, model information, bordered input areas and chat-style response display added.
 - Next implementation milestone: shared research-safe engineering-document source for both chatbots, followed by controlled response-time and answer-quality testing.
