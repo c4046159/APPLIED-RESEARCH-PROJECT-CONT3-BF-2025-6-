@@ -66,18 +66,28 @@ The incremental extension was to add a second independent LLM provider to the ex
 - The implementation uses the official `cohere` Python SDK, `ClientV2`, and the Chat API.
 - Commit `703f0ea` replaces the Mistral dependency with Cohere.
 - Commit `11191c2` changes Chatbot B to Cohere Command A+.
-- Validation with the same simple prompt (`What is a PLC?`) is the next action.
+
+### Cohere validation - structured response parsing issue
+
+- The validation prompt `What is a PLC?` successfully reached Cohere and produced a structured assistant response.
+- The initial code attempted to read `response.message.content[0].text`.
+- Command A+ can return a `thinking` block before the final `text` block, so the first returned item was a `ThinkingAssistantMessageResponseContentItem` rather than a text item.
+- Streamlit therefore displayed: `'ThinkingAssistantMessageResponseContentItem' object has no attribute 'text'`.
+- This is not an authentication, quota or provider-availability failure. It confirms that Cohere responded, but the response parser made an incorrect assumption about item order.
+- The parsing code was changed to loop through `response.message.content` and select the item where `content.type == "text"`.
+- Commit `0ba34a2` records this fix (`Fix Cohere response parsing for thinking and text blocks`).
+- A repeat of the same validation prompt is now required to confirm the full end-to-end Chatbot B path.
 
 ### Reflection from the incremental build so far
 
-The extension has shown that adding a second model is not only a coding problem. Authentication, provider availability, free-tier quotas and upstream service reliability are practical constraints that can directly affect the feasibility and reproducibility of an empirical chatbot comparison. The failed provider trials are therefore retained as development and validation evidence rather than removed from the record.
+The extension has shown that adding a second model is not only a coding problem. Authentication, provider availability, free-tier quotas, structured API responses and upstream service reliability are practical constraints that can directly affect the feasibility and reproducibility of an empirical chatbot comparison. The failed provider trials and parsing correction are therefore retained as development and validation evidence rather than removed from the record.
 
 The provider problems also caused a useful methodological refinement. The final study will compare two stable chatbot systems rather than three less reliable systems. This keeps the core comparative research question intact while reducing external-provider risk and creating more capacity for systematic repeated testing and analysis.
 
 ## Current prototype status
 
 - Chatbot A: Google Gemini 3.5 Flash-Lite - working.
-- Chatbot B: Cohere Command A+ - implementation deployed, validation pending.
+- Chatbot B: Cohere Command A+ - API response confirmed; response parsing corrected; final validation retest required.
 - Chatbot C: removed from final scope.
 - Final comparison scope: two chatbot systems.
 - Shared Google Drive engineering-document source: planned after both final model connections are stable.
