@@ -4,14 +4,60 @@ import cohere
 from google import genai
 
 
-st.title("AI Chatbot Comparison")
-st.write("Applied Research Project")
+st.set_page_config(
+    page_title="Applied Research Project - AI Chatbot Comparison",
+    page_icon="🎓",
+    layout="centered"
+)
+
+
+# -----------------------------------------
+# PROJECT HEADER
+# -----------------------------------------
+
+st.title("APPLIED RESEARCH PROJECT (CONT3 BF-2025/6)")
+st.caption("Module: 55-709708-BF-20256")
+
+with st.container(border=True):
+
+    st.subheader("Student Information")
+    st.write("**Full Name:** Carlos Pizarro")
+    st.write("**Email Address:** Carlos.Pizarro@student.shu.ac.uk")
+    st.write("**Student ID:** 34046159")
+
+
+st.subheader("Project Overview")
+
+st.info(
+    "This research prototype compares two large language model chatbot systems "
+    "through the same Streamlit interface. The aim is to evaluate how the models "
+    "respond to the same engineering questions under controlled conditions. "
+    "Later stages of the project will provide both chatbots with the same "
+    "research-safe engineering knowledge source and will compare measures such "
+    "as response quality, groundedness, consistency and response time."
+)
+
+st.markdown(
+    "**How to use the prototype:** Enter an engineering question in Chatbot A "
+    "and submit it. Then open Chatbot B, enter the same question and submit it. "
+    "The responses can then be compared under the same test conditions."
+)
+
+st.warning(
+    "Disclaimer: This application is a non-commercial academic research prototype. "
+    "It relies on third-party AI services, which remain subject to their own terms "
+    "and conditions, availability, usage limits and policies. This project is not "
+    "a commercial enterprise and is not operated for profit. No revenue is generated "
+    "from the prototype; its development represents academic time and effort only."
+)
+
+st.divider()
 
 
 # Create two chatbot tabs
 tab_a, tab_b = st.tabs([
-    "Chatbot A",
-    "Chatbot B"
+    "Chatbot A - Gemini",
+    "Chatbot B - Cohere"
 ])
 
 
@@ -22,40 +68,49 @@ tab_a, tab_b = st.tabs([
 with tab_a:
 
     st.subheader("Chatbot A")
+    st.write("**Provider:** Google")
+    st.write("**Model:** Gemini 3.5 Flash-Lite")
+    st.write("**Connection:** Google GenAI API")
+    st.success("Status: Operational")
 
-    question_a = st.text_input(
-        "Enter a question",
-        key="question_a"
-    )
+    with st.container(border=True):
 
-    if st.button(
-        "Send to Chatbot A",
-        key="button_a"
-    ):
+        question_a = st.text_input(
+            "Engineering question",
+            placeholder="e.g. What is a PLC?",
+            key="question_a"
+        )
 
-        if question_a == "":
-            st.warning("Please enter a question.")
+        if st.button(
+            "Ask Chatbot A",
+            key="button_a"
+        ):
 
-        else:
+            if question_a == "":
+                st.warning("Please enter a question.")
 
-            try:
+            else:
 
-                gemini_key = st.secrets["GEMINI_API_KEY"]
+                try:
 
-                client = genai.Client(
-                    api_key=gemini_key
-                )
+                    gemini_key = st.secrets["GEMINI_API_KEY"]
 
-                response = client.models.generate_content(
-                    model="gemini-3.5-flash-lite",
-                    contents=question_a
-                )
+                    client = genai.Client(
+                        api_key=gemini_key
+                    )
 
-                st.write("Response:")
-                st.write(response.text)
+                    response = client.models.generate_content(
+                        model="gemini-3.5-flash-lite",
+                        contents=question_a
+                    )
 
-            except Exception as error:
-                st.error(error)
+                    st.markdown("#### Response")
+
+                    with st.chat_message("assistant"):
+                        st.write(response.text)
+
+                except Exception as error:
+                    st.error(error)
 
 
 # -----------------------------------------
@@ -65,53 +120,63 @@ with tab_a:
 with tab_b:
 
     st.subheader("Chatbot B")
+    st.write("**Provider:** Cohere")
+    st.write("**Model:** Command A+")
+    st.write("**Model ID:** command-a-plus-05-2026")
+    st.write("**Connection:** Cohere Chat API")
+    st.success("Status: Operational")
 
-    question_b = st.text_input(
-        "Enter a question",
-        key="question_b"
-    )
+    with st.container(border=True):
 
-    if st.button(
-        "Send to Chatbot B",
-        key="button_b"
-    ):
+        question_b = st.text_input(
+            "Engineering question",
+            placeholder="e.g. What is a PLC?",
+            key="question_b"
+        )
 
-        if question_b == "":
-            st.warning("Please enter a question.")
+        if st.button(
+            "Ask Chatbot B",
+            key="button_b"
+        ):
 
-        else:
+            if question_b == "":
+                st.warning("Please enter a question.")
 
-            try:
+            else:
 
-                cohere_key = st.secrets["COHERE_API_KEY"]
+                try:
 
-                client = cohere.ClientV2(
-                    api_key=cohere_key
-                )
+                    cohere_key = st.secrets["COHERE_API_KEY"]
 
-                response = client.chat(
-                    model="command-a-plus-05-2026",
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": question_b
-                        }
-                    ]
-                )
+                    client = cohere.ClientV2(
+                        api_key=cohere_key
+                    )
 
-                answer = ""
+                    response = client.chat(
+                        model="command-a-plus-05-2026",
+                        messages=[
+                            {
+                                "role": "user",
+                                "content": question_b
+                            }
+                        ]
+                    )
 
-                for content in response.message.content:
+                    answer = ""
 
-                    if content.type == "text":
-                        answer = content.text
+                    for content in response.message.content:
 
-                if answer == "":
-                    st.error("No text response was returned.")
+                        if content.type == "text":
+                            answer = content.text
 
-                else:
-                    st.write("Response:")
-                    st.write(answer)
+                    if answer == "":
+                        st.error("No text response was returned.")
 
-            except Exception as error:
-                st.error(error)
+                    else:
+                        st.markdown("#### Response")
+
+                        with st.chat_message("assistant"):
+                            st.write(answer)
+
+                except Exception as error:
+                    st.error(error)
