@@ -107,6 +107,19 @@ The successful Cohere retest closes this incremental build cycle with both final
 - The underlying Gemini and Cohere API calls were deliberately left unchanged so that this presentation refinement does not alter the validated experimental provider configuration.
 - Commit `0ecdcf7` records the interface update (`Polish research prototype interface and add project information`).
 
+## 13 September 2026 - Sheffield Hallam inspired visual theme
+
+- The Sheffield Hallam Online website (`online.shu.ac.uk`) and the University's publicly available brand guidance were reviewed as visual inspiration for the prototype.
+- Browser-inspected CSS supplied during development showed a 16px/1rem body-text scale, approximately 1.5 line-height, sans-serif typography and body text colour around `#445063`.
+- The University's current public brand guidance was used to identify Hallam Maroon (`#672146`), Collegiate Crimson (`#AC145A`), Hallam Pink (`#E31C79`) and HUBS Silver (`#D0D3D4`) as suitable interface colours.
+- Generic WordPress preset gradients, Tailwind variables and browser-reset rules found in the inspected CSS were deliberately excluded because they are implementation scaffolding rather than meaningful Sheffield Hallam visual identity.
+- Meta Pro was identified as Sheffield Hallam's primary typeface, but it is proprietary. The prototype does not copy, embed or redistribute that font; a standard sans-serif configuration is used instead, consistent with the University's published fallback guidance.
+- A project-level `.streamlit/config.toml` was added to apply the colour palette, 16px base scale, light surfaces, visible borders and restrained corner radii.
+- The application header now includes a simple three-part Hallam-colour accent strip, and the primary chatbot buttons use the Hallam Maroon theme colour.
+- The interface contains a visible attribution stating that its theme is inspired by Sheffield Hallam's online site and public brand guidance and that the application is an independent student research prototype rather than an official University digital service.
+- A dedicated `UI_THEME_NOTES.md` file records the design sources, extracted values, implementation choices, exclusions and accessibility rationale.
+- Commits `2b43615`, `c9b9a7b` and `bb72876` record the theme configuration, application treatment and theme documentation respectively.
+
 ## Current prototype status
 
 - Chatbot A: Google Gemini 3.5 Flash-Lite - working and frozen for the experiment.
@@ -114,4 +127,5 @@ The successful Cohere retest closes this incremental build cycle with both final
 - Chatbot C: removed from final scope.
 - Final comparison scope: two chatbot systems.
 - User interface: research/module identity, student information, instructions, disclaimer, model information, bordered input areas and chat-style response display added.
+- Visual theme: Sheffield Hallam inspired, with provenance and limitations documented separately in `UI_THEME_NOTES.md`.
 - Next implementation milestone: shared research-safe engineering-document source for both chatbots, followed by controlled response-time and answer-quality testing.
