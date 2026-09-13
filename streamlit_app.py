@@ -1,7 +1,7 @@
 import streamlit as st
-import requests
 
 from google import genai
+from mistralai.client import Mistral
 
 
 st.title("AI Chatbot Comparison")
@@ -59,7 +59,7 @@ with tab_a:
 
 
 # -----------------------------------------
-# CHATBOT B - OPENROUTER / POOLSIDE LAGUNA
+# CHATBOT B - MISTRAL
 # -----------------------------------------
 
 with tab_b:
@@ -83,43 +83,26 @@ with tab_b:
 
             try:
 
-                openrouter_key = st.secrets["OPENROUTER_API_KEY"]
+                mistral_key = st.secrets["MISTRAL_API_KEY"]
 
-                response = requests.post(
-                    "https://openrouter.ai/api/v1/chat/completions",
-                    headers={
-                        "Authorization": "Bearer " + openrouter_key,
-                        "Content-Type": "application/json"
-                    },
-                    json={
-                        "model": "poolside/laguna-s-2.1:free",
-                        "messages": [
-                            {
-                                "role": "user",
-                                "content": question_b
-                            }
-                        ]
-                    },
-                    timeout=60
+                client = Mistral(
+                    api_key=mistral_key
                 )
 
-                data = response.json()
+                response = client.chat.complete(
+                    model="mistral-small-latest",
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": question_b
+                        }
+                    ]
+                )
 
-                if response.status_code == 200 and "choices" in data:
-
-                    st.write("Response:")
-                    st.write(
-                        data["choices"][0]["message"]["content"]
-                    )
-
-                elif "error" in data:
-
-                    st.error(data["error"].get("message", str(data["error"])))
-
-                else:
-
-                    st.error("Unexpected response from OpenRouter:")
-                    st.write(data)
+                st.write("Response:")
+                st.write(
+                    response.choices[0].message.content
+                )
 
             except Exception as error:
                 st.error(error)
