@@ -12,11 +12,88 @@ st.set_page_config(
 
 
 # -----------------------------------------
+# SHU-INSPIRED VISUAL TREATMENT
+# -----------------------------------------
+
+st.markdown(
+    """
+    <style>
+        .shu-accent {
+            display: flex;
+            width: 100%;
+            height: 8px;
+            margin-bottom: 1.2rem;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .shu-accent-maroon {
+            width: 60%;
+            background: #672146;
+        }
+
+        .shu-accent-crimson {
+            width: 25%;
+            background: #AC145A;
+        }
+
+        .shu-accent-pink {
+            width: 15%;
+            background: #E31C79;
+        }
+
+        .shu-kicker {
+            color: #AC145A;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 0.2rem;
+        }
+
+        .shu-theme-note {
+            margin-top: 0.8rem;
+            margin-bottom: 1rem;
+            padding: 0.8rem 1rem;
+            border-left: 4px solid #AC145A;
+            background: #F7F5F6;
+            color: #445063;
+            line-height: 1.5;
+        }
+    </style>
+
+    <div class="shu-accent">
+        <div class="shu-accent-maroon"></div>
+        <div class="shu-accent-crimson"></div>
+        <div class="shu-accent-pink"></div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# -----------------------------------------
 # PROJECT HEADER
 # -----------------------------------------
 
+st.markdown(
+    '<div class="shu-kicker">Academic Research Prototype</div>',
+    unsafe_allow_html=True
+)
+
 st.title("APPLIED RESEARCH PROJECT (CONT3 BF-2025/6)")
 st.caption("Module: 55-709708-BF-20256")
+
+st.markdown(
+    """
+    <div class="shu-theme-note">
+        The visual theme of this prototype is inspired by Sheffield Hallam University's
+        online website and publicly available brand guidance. The application remains an
+        independent student research prototype and is not an official Sheffield Hallam
+        University digital service.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 with st.container(border=True):
 
@@ -83,6 +160,7 @@ with tab_a:
 
         if st.button(
             "Ask Chatbot A",
+            type="primary",
             key="button_a"
         ):
 
@@ -136,6 +214,7 @@ with tab_b:
 
         if st.button(
             "Ask Chatbot B",
+            type="primary",
             key="button_b"
         ):
 
