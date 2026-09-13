@@ -1,7 +1,7 @@
 import streamlit as st
+import requests
 
 from google import genai
-from groq import Groq
 
 
 st.title("AI Chatbot Comparison")
@@ -59,7 +59,7 @@ with tab_a:
 
 
 # -----------------------------------------
-# CHATBOT B - GROQ
+# CHATBOT B - OPENROUTER / NVIDIA NEMOTRON
 # -----------------------------------------
 
 with tab_b:
@@ -83,26 +83,37 @@ with tab_b:
 
             try:
 
-                groq_key = st.secrets["GROQ_API_KEY"]
+                openrouter_key = st.secrets["OPENROUTER_API_KEY"]
 
-                client = Groq(
-                    api_key=groq_key
+                response = requests.post(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    headers={
+                        "Authorization": "Bearer " + openrouter_key,
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+                        "messages": [
+                            {
+                                "role": "user",
+                                "content": question_b
+                            }
+                        ]
+                    },
+                    timeout=60
                 )
 
-                response = client.chat.completions.create(
-                    model="openai/gpt-oss-120b",
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": question_b
-                        }
-                    ]
-                )
+                if response.status_code == 200:
 
-                st.write("Response:")
-                st.write(
-                    response.choices[0].message.content
-                )
+                    data = response.json()
+
+                    st.write("Response:")
+                    st.write(
+                        data["choices"][0]["message"]["content"]
+                    )
+
+                else:
+                    st.error(response.text)
 
             except Exception as error:
                 st.error(error)
