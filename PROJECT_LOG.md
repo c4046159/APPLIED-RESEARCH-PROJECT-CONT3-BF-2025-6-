@@ -17,21 +17,26 @@
 - Groq is therefore recorded as an attempted but discontinued provider rather than as a programming failure.
 - Although Groq currently documents a Free plan, the implementation decision was based on the actual account/setup experience and the project's no-payment constraint.
 
-### Design decision
+## 13 September 2026 - OpenRouter provider trial discontinued
 
-Chatbot B was moved to OpenRouter so that a specific free model could be called through a simple REST API while keeping the experimental model identity known.
+- Chatbot B was then tested through OpenRouter using fixed free-model endpoints.
+- The first model tested was `nvidia/nemotron-3-ultra-550b-a55b:free`.
+- The request reached OpenRouter but returned a response without the expected `choices` field.
+- A second free model, `poolside/laguna-s-2.1:free`, was then tested.
+- This request returned `Provider returned error` from OpenRouter.
+- These failures were treated as free-endpoint/provider availability issues rather than as failures of the Streamlit application itself.
+- OpenRouter was therefore discontinued for Chatbot B because repeated upstream-provider failures made it unsuitable for a simple and reproducible prototype at this stage.
 
-## 13 September 2026 - OpenRouter model revised
+## 13 September 2026 - Chatbot B moved to Mistral
 
-- The first OpenRouter model tested for Chatbot B was `nvidia/nemotron-3-ultra-550b-a55b:free`.
-- The API request reached OpenRouter, but the application received a response without the expected `choices` field, producing the Python `KeyError: 'choices'` message.
-- OpenRouter's current public model page showed relatively low recent availability for this free endpoint (approximately 73-75%), so the problem was treated as a provider/model availability issue rather than an authentication failure.
-- Chatbot B was therefore changed to `poolside/laguna-s-2.1:free`, another fixed free OpenRouter model with much higher recent availability.
-- Error handling was also improved so that future OpenRouter API errors display the provider's real error message rather than only a Python dictionary-key error.
+- Chatbot B was changed to use the official Mistral API directly.
+- Mistral Studio currently provides a Free mode intended for evaluation and prototyping, with no credit card required according to the official setup documentation.
+- The implementation uses the official `mistralai` Python SDK and the `mistral-small-latest` model.
+- This keeps the code simple and removes the additional OpenRouter routing layer.
 
 ## Current prototype status
 
 - Chatbot A: Google Gemini 3.5 Flash-Lite - working.
-- Chatbot B: OpenRouter / Poolside Laguna S 2.1 (free) - implementation updated, testing required.
+- Chatbot B: Mistral Small through the official Mistral API - implementation ready for testing.
 - Chatbot C: not yet implemented.
 - Shared Google Drive engineering-document source: planned for a later milestone after the model connections are working.
