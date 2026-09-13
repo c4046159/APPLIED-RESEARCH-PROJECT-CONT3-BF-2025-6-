@@ -59,7 +59,7 @@ with tab_a:
 
 
 # -----------------------------------------
-# CHATBOT B - OPENROUTER / NVIDIA NEMOTRON
+# CHATBOT B - OPENROUTER / POOLSIDE LAGUNA
 # -----------------------------------------
 
 with tab_b:
@@ -92,7 +92,7 @@ with tab_b:
                         "Content-Type": "application/json"
                     },
                     json={
-                        "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+                        "model": "poolside/laguna-s-2.1:free",
                         "messages": [
                             {
                                 "role": "user",
@@ -103,17 +103,23 @@ with tab_b:
                     timeout=60
                 )
 
-                if response.status_code == 200:
+                data = response.json()
 
-                    data = response.json()
+                if response.status_code == 200 and "choices" in data:
 
                     st.write("Response:")
                     st.write(
                         data["choices"][0]["message"]["content"]
                     )
 
+                elif "error" in data:
+
+                    st.error(data["error"].get("message", str(data["error"])))
+
                 else:
-                    st.error(response.text)
+
+                    st.error("Unexpected response from OpenRouter:")
+                    st.write(data)
 
             except Exception as error:
                 st.error(error)
