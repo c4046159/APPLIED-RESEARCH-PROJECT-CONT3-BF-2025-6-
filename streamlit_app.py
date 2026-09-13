@@ -1,7 +1,7 @@
 import streamlit as st
+import cohere
 
 from google import genai
-from mistralai.client import Mistral
 
 
 st.title("AI Chatbot Comparison")
@@ -59,7 +59,7 @@ with tab_a:
 
 
 # -----------------------------------------
-# CHATBOT B - MISTRAL
+# CHATBOT B - COHERE
 # -----------------------------------------
 
 with tab_b:
@@ -83,14 +83,14 @@ with tab_b:
 
             try:
 
-                mistral_key = st.secrets["MISTRAL_API_KEY"]
+                cohere_key = st.secrets["COHERE_API_KEY"]
 
-                client = Mistral(
-                    api_key=mistral_key
+                client = cohere.ClientV2(
+                    api_key=cohere_key
                 )
 
-                response = client.chat.complete(
-                    model="mistral-small-latest",
+                response = client.chat(
+                    model="command-a-plus-05-2026",
                     messages=[
                         {
                             "role": "user",
@@ -101,7 +101,7 @@ with tab_b:
 
                 st.write("Response:")
                 st.write(
-                    response.choices[0].message.content
+                    response.message.content[0].text
                 )
 
             except Exception as error:
