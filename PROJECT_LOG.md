@@ -49,18 +49,35 @@ The incremental extension was to add a second independent LLM provider to the ex
 - Because the project requires repeated test calls for an empirical comparison and must avoid paid API access, Mistral was judged unsuitable for Chatbot B in its current free-account configuration.
 - Commit evidence includes `7566a97` (Replace OpenRouter Chatbot B with Mistral free-mode API), `af01d2d` (Use official Mistral Python SDK for Chatbot B), and `88217b4` (Document OpenRouter trial and switch Chatbot B to Mistral).
 
+### Scope decision - reduce final comparison from three chatbots to two
+
+- The original implementation plan considered three chatbot systems.
+- Repeated provider-access, rate-limit and free-endpoint reliability problems showed that maintaining three independent no-payment cloud providers would add substantial operational risk to the experiment.
+- The project scope has therefore been deliberately reduced to two final chatbot systems: Chatbot A and Chatbot B.
+- This is a research-driven scope reduction rather than a removal of the comparison itself. Two independent systems are sufficient to perform a controlled comparative study while allowing more time for repeated trials, shared document retrieval, response-time measurement, answer scoring and analysis.
+- The change also improves reproducibility by avoiding a third provider whose availability could prevent completion of the planned test set.
+- Chatbot C is no longer planned for the final implementation.
+
+### Chatbot B moved to Cohere
+
+- Cohere was selected as the next Chatbot B candidate because its trial API key has published limits suitable for prototyping and repeated testing.
+- Cohere currently documents a 20 requests/minute Chat limit for trial keys and a 1,000 API calls/month trial allowance.
+- `command-a-plus-05-2026` is being used because it is a current live Command model and Cohere documents it as free for trial-key usage until trial rate limits are reached.
+- The implementation uses the official `cohere` Python SDK, `ClientV2`, and the Chat API.
+- Commit `703f0ea` replaces the Mistral dependency with Cohere.
+- Commit `11191c2` changes Chatbot B to Cohere Command A+.
+- Validation with the same simple prompt (`What is a PLC?`) is the next action.
+
 ### Reflection from the incremental build so far
 
 The extension has shown that adding a second model is not only a coding problem. Authentication, provider availability, free-tier quotas and upstream service reliability are practical constraints that can directly affect the feasibility and reproducibility of an empirical chatbot comparison. The failed provider trials are therefore retained as development and validation evidence rather than removed from the record.
 
-### Next planned provider
-
-- Cohere is the next candidate for Chatbot B because it offers trial API access suitable for prototyping and provides published usage limits.
-- The objective remains unchanged: obtain one stable, no-payment second chatbot before adding Chatbot C or the shared Google Drive knowledge source.
+The provider problems also caused a useful methodological refinement. The final study will compare two stable chatbot systems rather than three less reliable systems. This keeps the core comparative research question intact while reducing external-provider risk and creating more capacity for systematic repeated testing and analysis.
 
 ## Current prototype status
 
 - Chatbot A: Google Gemini 3.5 Flash-Lite - working.
-- Chatbot B: second-provider implementation under validation; Groq, OpenRouter and Mistral have been trialled and discontinued for documented reasons.
-- Chatbot C: not yet implemented.
-- Shared Google Drive engineering-document source: planned for a later milestone after the model connections are stable.
+- Chatbot B: Cohere Command A+ - implementation deployed, validation pending.
+- Chatbot C: removed from final scope.
+- Final comparison scope: two chatbot systems.
+- Shared Google Drive engineering-document source: planned after both final model connections are stable.
