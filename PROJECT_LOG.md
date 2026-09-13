@@ -19,15 +19,19 @@
 
 ### Design decision
 
-Chatbot B will instead use a specific free model through OpenRouter. A fixed model endpoint will be used rather than OpenRouter's random free-model router so that the experimental model identity remains known and reproducible.
+Chatbot B was moved to OpenRouter so that a specific free model could be called through a simple REST API while keeping the experimental model identity known.
 
-Planned model:
+## 13 September 2026 - OpenRouter model revised
 
-`nvidia/nemotron-3-ultra-550b-a55b:free`
+- The first OpenRouter model tested for Chatbot B was `nvidia/nemotron-3-ultra-550b-a55b:free`.
+- The API request reached OpenRouter, but the application received a response without the expected `choices` field, producing the Python `KeyError: 'choices'` message.
+- OpenRouter's current public model page showed relatively low recent availability for this free endpoint (approximately 73-75%), so the problem was treated as a provider/model availability issue rather than an authentication failure.
+- Chatbot B was therefore changed to `poolside/laguna-s-2.1:free`, another fixed free OpenRouter model with much higher recent availability.
+- Error handling was also improved so that future OpenRouter API errors display the provider's real error message rather than only a Python dictionary-key error.
 
 ## Current prototype status
 
-- Chatbot A: Google Gemini - working.
-- Chatbot B: Groq trial discontinued; OpenRouter replacement in progress.
+- Chatbot A: Google Gemini 3.5 Flash-Lite - working.
+- Chatbot B: OpenRouter / Poolside Laguna S 2.1 (free) - implementation updated, testing required.
 - Chatbot C: not yet implemented.
 - Shared Google Drive engineering-document source: planned for a later milestone after the model connections are working.
