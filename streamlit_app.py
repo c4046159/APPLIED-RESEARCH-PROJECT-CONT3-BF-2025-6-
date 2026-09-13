@@ -99,10 +99,19 @@ with tab_b:
                     ]
                 )
 
-                st.write("Response:")
-                st.write(
-                    response.message.content[0].text
-                )
+                answer = ""
+
+                for content in response.message.content:
+
+                    if content.type == "text":
+                        answer = content.text
+
+                if answer == "":
+                    st.error("No text response was returned.")
+
+                else:
+                    st.write("Response:")
+                    st.write(answer)
 
             except Exception as error:
                 st.error(error)
