@@ -76,18 +76,28 @@ The incremental extension was to add a second independent LLM provider to the ex
 - This is not an authentication, quota or provider-availability failure. It confirms that Cohere responded, but the response parser made an incorrect assumption about item order.
 - The parsing code was changed to loop through `response.message.content` and select the item where `content.type == "text"`.
 - Commit `0ba34a2` records this fix (`Fix Cohere response parsing for thinking and text blocks`).
-- A repeat of the same validation prompt is now required to confirm the full end-to-end Chatbot B path.
 
-### Reflection from the incremental build so far
+### Cohere validation - successful end-to-end result
 
-The extension has shown that adding a second model is not only a coding problem. Authentication, provider availability, free-tier quotas, structured API responses and upstream service reliability are practical constraints that can directly affect the feasibility and reproducibility of an empirical chatbot comparison. The failed provider trials and parsing correction are therefore retained as development and validation evidence rather than removed from the record.
+- The corrected parser was retested using the same validation prompt: `What is a PLC?`.
+- Chatbot B returned and displayed the expected natural-language response successfully in the deployed Streamlit application.
+- This confirms the full Chatbot B path is operational: Streamlit -> Cohere API -> Command A+ -> structured response -> text extraction -> browser display.
+- Result: PASS for end-to-end Chatbot B operation.
+- Gemini and Cohere are now frozen as the two final chatbot systems for the comparative experiment.
+- No Chatbot C will be implemented.
+
+### Reflection from the incremental build
+
+The extension showed that adding a second model is not only a coding problem. Authentication, provider availability, free-tier quotas, structured API responses and upstream service reliability are practical constraints that can directly affect the feasibility and reproducibility of an empirical chatbot comparison. The failed provider trials and parsing correction are therefore retained as development and validation evidence rather than removed from the record.
 
 The provider problems also caused a useful methodological refinement. The final study will compare two stable chatbot systems rather than three less reliable systems. This keeps the core comparative research question intact while reducing external-provider risk and creating more capacity for systematic repeated testing and analysis.
 
+The successful Cohere retest closes this incremental build cycle with both final chatbot providers operational.
+
 ## Current prototype status
 
-- Chatbot A: Google Gemini 3.5 Flash-Lite - working.
-- Chatbot B: Cohere Command A+ - API response confirmed; response parsing corrected; final validation retest required.
+- Chatbot A: Google Gemini 3.5 Flash-Lite - working and frozen for the experiment.
+- Chatbot B: Cohere Command A+ - working and frozen for the experiment.
 - Chatbot C: removed from final scope.
 - Final comparison scope: two chatbot systems.
-- Shared Google Drive engineering-document source: planned after both final model connections are stable.
+- Next implementation milestone: shared research-safe engineering-document source for both chatbots, followed by controlled response-time and answer-quality testing.
