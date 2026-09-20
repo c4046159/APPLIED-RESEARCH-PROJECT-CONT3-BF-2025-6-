@@ -6,14 +6,10 @@ from google import genai
 
 st.set_page_config(
     page_title="Applied Research Project - AI Chatbot Comparison",
-    page_icon="🎓",
     layout="centered"
 )
 
 
-# -----------------------------------------
-# SHU-INSPIRED VISUAL TREATMENT
-# -----------------------------------------
 
 st.markdown(
     """
@@ -71,25 +67,17 @@ st.markdown(
 )
 
 
-# -----------------------------------------
-# PROJECT HEADER
-# -----------------------------------------
-
 st.markdown(
-    '<div class="shu-kicker">Academic Research Prototype</div>',
+    '<div class="shu-kicker">Academic Research</div>',
     unsafe_allow_html=True
 )
 
-st.title("APPLIED RESEARCH PROJECT (CONT3 BF-2025/6)")
-st.caption("Module: 55-709708-BF-20256")
-
+st.title("APPLIED RESEARCH PROJECT (CONT3 BF-2025/6) 55-709708-BF-20256")
 st.markdown(
     """
-    <div class="shu-theme-note">
-        The visual theme of this prototype is inspired by Sheffield Hallam University's
-        online website and publicly available brand guidance. The application remains an
-        independent student research prototype and is not an official Sheffield Hallam
-        University digital service.
+    <div class="Sheffield Hallam University theme disclaimer:">
+        The visual theme of this web application was inspired by Sheffield Hallam University's
+        online websites and other media and materials.
     </div>
     """,
     unsafe_allow_html=True
@@ -98,21 +86,20 @@ st.markdown(
 with st.container(border=True):
 
     st.subheader("Student Information")
-    st.write("**Full Name:** Carlos Pizarro")
-    st.write("**Email Address:** Carlos.Pizarro@student.shu.ac.uk")
-    st.write("**Student ID:** 34046159")
+    st.write("Name: Carlos Pizarro")
+    st.write("Email: Carlos.Pizarro@student.shu.ac.uk")
+    st.write("Student ID: 34046159")
 
-
-st.subheader("Project Overview")
+st.subheader("Project Summary")
 
 st.info(
     "This research prototype compares two large language model chatbot systems "
-    "through the same Streamlit interface. The aim is to evaluate how the models "
-    "respond to the same engineering questions under controlled conditions. "
-    "Later stages of the project will provide both chatbots with the same "
-    "research-safe engineering knowledge source and will compare measures such "
-    "as response quality, groundedness, consistency and response time."
+    "through the same Streamlit interface. The aim is to evaluate how the models"
+    "respond to the same engineering questions under controlled conditions:"
+    "Providing both chatbots with the same "research-safe" documents and comparing measures such "
+    "as response quality, groundedness, consistency and response time."    
 )
+
 
 st.markdown(
     "**How to use the prototype:** Enter an engineering question in Chatbot A "
