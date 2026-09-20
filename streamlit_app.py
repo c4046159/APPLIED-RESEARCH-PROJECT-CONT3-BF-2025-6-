@@ -96,51 +96,44 @@ st.info(
     "This research prototype compares two large language model chatbot systems "
     "through the same Streamlit interface. The aim is to evaluate how the models"
     "respond to the same engineering questions under controlled conditions:"
-    "Providing both chatbots with the same "research-safe" documents and comparing measures such "
+    "Providing both chatbots with the same 'research-safe' documents and comparing measures such "
     "as response quality, groundedness, consistency and response time."    
 )
 
 
 st.markdown(
-    "**How to use the prototype:** Enter an engineering question in Chatbot A "
-    "and submit it. Then open Chatbot B, enter the same question and submit it. "
+    "How to use: Enter a relevant question in Chatbot A, i.e., 'What Is a PLC?' "
+    "and submit it."
+    "Then open Chatbot B, enter the same question and submit it. "
     "The responses can then be compared under the same test conditions."
 )
 
 st.warning(
     "Disclaimer: This application is a non-commercial academic research prototype. "
     "It relies on third-party AI services, which remain subject to their own terms "
-    "and conditions, availability, usage limits and policies. This project is not "
-    "a commercial enterprise and is not operated for profit. No revenue is generated "
-    "from the prototype; its development represents academic time and effort only."
+    "and conditions, availability, usage limits and policies."
 )
 
 st.divider()
 
-
-# Create two chatbot tabs
-tab_a, tab_b = st.tabs([
+tab_a, tab_b, tab_c, = st.tabs([
     "Chatbot A - Gemini",
-    "Chatbot B - Cohere"
+    "Chatbot B - Cohere",
+    "TESTS and METRICS"
 ])
-
-
-# -----------------------------------------
-# CHATBOT A - GOOGLE GEMINI
-# -----------------------------------------
 
 with tab_a:
 
     st.subheader("Chatbot A")
-    st.write("**Provider:** Google")
-    st.write("**Model:** Gemini 3.5 Flash-Lite")
-    st.write("**Connection:** Google GenAI API")
+    st.write("Provider: Google")
+    st.write("Model: Gemini 3.5 Flash-Lite")
+    st.write("Connection: Google GenAI API")
     st.success("Status: Operational")
 
     with st.container(border=True):
 
         question_a = st.text_input(
-            "Engineering question",
+            "Engineering related question",
             placeholder="e.g. What is a PLC?",
             key="question_a"
         )
@@ -177,24 +170,19 @@ with tab_a:
                 except Exception as error:
                     st.error(error)
 
-
-# -----------------------------------------
-# CHATBOT B - COHERE
-# -----------------------------------------
-
 with tab_b:
 
     st.subheader("Chatbot B")
-    st.write("**Provider:** Cohere")
-    st.write("**Model:** Command A+")
-    st.write("**Model ID:** command-a-plus-05-2026")
-    st.write("**Connection:** Cohere Chat API")
+    st.write("Provider: Cohere")
+    st.write("Model: Command A+")
+    st.write("Model ID: command-a-plus-05-2026")
+    st.write("Connection: Cohere Chat API")
     st.success("Status: Operational")
 
     with st.container(border=True):
 
         question_b = st.text_input(
-            "Engineering question",
+            "Engineering related question",
             placeholder="e.g. What is a PLC?",
             key="question_b"
         )
