@@ -124,7 +124,7 @@ st.warning(
 
 st.divider()
 
-tab_a, tab_b, tab_c, = st.tabs([
+tab_a, tab_b, tab_c = st.tabs([
     "Chatbot A - Gemini",
     "Chatbot B - Cohere",
     "TESTS and METRICS"
@@ -242,3 +242,48 @@ with tab_b:
 
                 except Exception as error:
                     st.error(error)
+
+
+with tab_c:
+
+    st.subheader("Research Documents and Test Preparation")
+
+    st.info(
+        "Current stage: Google Drive connection validation only. "
+        "The files listed below are not yet being supplied to either chatbot. "
+        "The next implementation milestone is to extract document text and provide "
+        "the same retrieved context to both models."
+    )
+
+    with st.container(border=True):
+
+        st.markdown("#### Google Drive Connection")
+
+        try:
+
+            files = list_folder_files()
+
+            st.success(
+                f"Connected to Google Drive. {len(files)} file(s) available."
+            )
+
+            if files:
+
+                st.write("Documents available to the research prototype:")
+
+                for file in files:
+                    st.write(f"- {file['name']}")
+
+            else:
+                st.info(
+                    "The configured Google Drive folder is accessible "
+                    "but currently contains no files."
+                )
+
+        except Exception:
+            st.error(
+                "Google Drive connection could not be completed. "
+                "Check the Streamlit Secrets, confirm that the Google Drive API "
+                "is enabled, and make sure the research folder is shared with "
+                "the service-account email address."
+            )
