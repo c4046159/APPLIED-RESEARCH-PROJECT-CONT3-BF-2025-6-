@@ -2,7 +2,6 @@ import io
 
 import streamlit as st
 
-from docx import Document
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
@@ -13,22 +12,7 @@ DRIVE_SCOPE = [
     "https://www.googleapis.com/auth/drive.readonly"
 ]
 
-
-GOOGLE_DOC_MIME = (
-    "application/vnd.google-apps.document"
-)
-
 PDF_MIME = "application/pdf"
-
-DOCX_MIME = (
-    "application/vnd.openxmlformats-officedocument."
-    "wordprocessingml.document"
-)
-
-TEXT_MIME_TYPES = {
-    "text/plain",
-    "text/markdown",
-}
 
 
 def get_drive_service():
@@ -64,7 +48,7 @@ def list_folder_files():
         q=(
             f"'{folder_id}' in parents "
             "and trashed = false "
-            "and mimeType != 'application/vnd.google-apps.folder'"
+            f"and mimeType = '{PDF_MIME}'"
         ),
         fields="files(id, name, mimeType)",
         orderBy="name",
@@ -97,33 +81,6 @@ def download_file_bytes(file_id):
     return file_buffer.getvalue()
 
 
-def export_google_doc_text(file_id):
-
-    drive_service = get_drive_service()
-
-    request = drive_service.files().export_media(
-        fileId=file_id,
-        mimeType="text/plain"
-    )
-
-    file_buffer = io.BytesIO()
-
-    downloader = MediaIoBaseDownload(
-        file_buffer,
-        request
-    )
-
-    done = False
-
-    while not done:
-        _, done = downloader.next_chunk()
-
-    return file_buffer.getvalue().decode(
-        "utf-8",
-        errors="ignore"
-    )
-
-
 def extract_pdf_text(file_bytes):
 
     reader = PdfReader(
@@ -142,91 +99,25 @@ def extract_pdf_text(file_bytes):
     return "\n".join(pages)
 
 
-def extract_docx_text(file_bytes):
-
-    document = Document(
-        io.BytesIO(file_bytes)
-    )
-
-    paragraphs = []
-
-    for paragraph in document.paragraphs:
-
-        text = paragraph.text.strip()
-
-        if text:
-            paragraphs.append(text)
-
-    return "\n".join(paragraphs)
-
-
-def extract_plain_text(file_bytes):
-
-    return file_bytes.decode(
-        "utf-8",
-        errors="ignore"
-    )
-
-
 def read_drive_file(file_info):
 
-    file_id = file_info["id"]
-    file_name = file_info["name"]
-    mime_type = file_info["mimeType"]
-
-    if mime_type == GOOGLE_DOC_MIME:
-
-        text = export_google_doc_text(
-            file_id
-        )
-
-    elif mime_type == PDF_MIME:
-
-        file_bytes = download_file_bytes(
-            file_id
-        )
-
-        text = extract_pdf_text(
-            file_bytes
-        )
-
-    elif mime_type == DOCX_MIME:
-
-        file_bytes = download_file_bytes(
-            file_id
-        )
-
-        text = extract_docx_text(
-            file_bytes
-        )
-
-    elif (
-        mime_type in TEXT_MIME_TYPES
-        or file_name.lower().endswith(
-            (".txt", ".md")
-        )
-    ):
-
-        file_bytes = download_file_bytes(
-            file_id
-        )
-
-        text = extract_plain_text(
-            file_bytes
-        )
-
-    else:
-
+    if file_info["mimeType"] != PDF_MIME:
         return None
 
-    text = text.strip()
+    file_bytes = download_file_bytes(
+        file_info["id"]
+    )
+
+    text = extract_pdf_text(
+        file_bytes
+    ).strip()
 
     if not text:
         return None
 
     return {
-        "name": file_name,
-        "mime_type": mime_type,
+        "name": file_info["name"],
+        "mime_type": file_info["mimeType"],
         "text": text,
     }
 
