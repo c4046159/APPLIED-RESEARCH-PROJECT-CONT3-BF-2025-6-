@@ -241,7 +241,7 @@ with tab_a:
             else:
 
                 run_id = next_run_id()
-                start_time = time.perf_counter()
+                start_time = None
 
                 try:
 
@@ -280,6 +280,8 @@ with tab_a:
                         api_key=gemini_key
                     )
 
+                    start_time = time.perf_counter()
+
                     response = (
                         client.models.generate_content(
                             model="gemini-3.5-flash-lite",
@@ -287,11 +289,14 @@ with tab_a:
                         )
                     )
 
-                    latency = round(
-                        time.perf_counter()
-                        - start_time,
-                        2
-                    )
+                    if start_time is not None:
+                        latency = round(
+                            time.perf_counter()
+                            - start_time,
+                            2
+                        )
+                    else:
+                        latency = 0.0
 
                     answer = response.text
 
@@ -312,7 +317,7 @@ with tab_a:
                         st.write(answer)
 
                     st.caption(
-                        f"Observed response time: "
+                        f"Observed model response time: "
                         f"{latency:.2f} seconds. "
                         f"Recorded as {run_id}."
                     )
@@ -330,11 +335,14 @@ with tab_a:
 
                 except Exception as error:
 
-                    latency = round(
-                        time.perf_counter()
-                        - start_time,
-                        2
-                    )
+                    if start_time is not None:
+                        latency = round(
+                            time.perf_counter()
+                            - start_time,
+                            2
+                        )
+                    else:
+                        latency = 0.0
 
                     record_pilot_result(
                         run_id=run_id,
@@ -381,7 +389,7 @@ with tab_b:
             else:
 
                 run_id = next_run_id()
-                start_time = time.perf_counter()
+                start_time = None
 
                 try:
 
@@ -420,6 +428,8 @@ with tab_b:
                         api_key=cohere_key
                     )
 
+                    start_time = time.perf_counter()
+
                     response = client.chat(
                         model="command-a-plus-05-2026",
                         messages=[
@@ -439,11 +449,14 @@ with tab_b:
                         if content.type == "text":
                             answer = content.text
 
-                    latency = round(
-                        time.perf_counter()
-                        - start_time,
-                        2
-                    )
+                    if start_time is not None:
+                        latency = round(
+                            time.perf_counter()
+                            - start_time,
+                            2
+                        )
+                    else:
+                        latency = 0.0
 
                     if answer == "":
 
@@ -490,7 +503,7 @@ with tab_b:
                             st.write(answer)
 
                         st.caption(
-                            f"Observed response time: "
+                            f"Observed model response time: "
                             f"{latency:.2f} seconds. "
                             f"Recorded as {run_id}."
                         )
@@ -508,11 +521,14 @@ with tab_b:
 
                 except Exception as error:
 
-                    latency = round(
-                        time.perf_counter()
-                        - start_time,
-                        2
-                    )
+                    if start_time is not None:
+                        latency = round(
+                            time.perf_counter()
+                            - start_time,
+                            2
+                        )
+                    else:
+                        latency = 0.0
 
                     record_pilot_result(
                         run_id=run_id,
