@@ -8,7 +8,15 @@ import streamlit as st
 
 from google import genai
 
-from google_drive import list_folder_files
+from google_drive import (
+    list_folder_files,
+    load_research_documents,
+)
+from document_retrieval import (
+    build_grounded_prompt,
+    retrieve_relevant_chunks,
+    source_names,
+)
 from research_results import (
     add_result,
     get_results_dataframe,
@@ -30,6 +38,15 @@ def uk_timestamp():
     ).isoformat(timespec="seconds")
 
 
+@st.cache_data(
+    ttl=600,
+    show_spinner=False
+)
+def get_research_documents():
+
+    return load_research_documents()
+
+
 def record_pilot_result(
     run_id,
     chatbot,
@@ -37,6 +54,7 @@ def record_pilot_result(
     model_id,
     question,
     latency_seconds,
+    source_reference="",
     response_text="",
     error_status="OK",
     error_message=""
@@ -48,7 +66,7 @@ def record_pilot_result(
             "test_id": "PILOT",
             "domain": "Pilot",
             "question": question,
-            "source_reference": "",
+            "source_reference": source_reference,
             "chatbot": chatbot,
             "provider": provider,
             "model_id": model_id,
@@ -186,6 +204,21 @@ st.warning(
 st.divider()
 
 
+try:
+
+    research_documents, skipped_documents = (
+        get_research_documents()
+    )
+
+    document_connection_error = ""
+
+except Exception as error:
+
+    research_documents = []
+    skipped_documents = []
+    document_connection_error = str(error)
+
+
 tab_a, tab_b, tab_c = st.tabs(
     [
         "Chatbot A - Gemini",
@@ -227,6 +260,28 @@ with tab_a:
 
                 try:
 
+                    if not research_documents:
+                        raise ValueError(
+                            "No readable research documents "
+                            "are available from Google Drive."
+                        )
+
+                    chunks_a = (
+                        retrieve_relevant_chunks(
+                            question_a,
+                            research_documents
+                        )
+                    )
+
+                    prompt_a = build_grounded_prompt(
+                        question_a,
+                        chunks_a
+                    )
+
+                    sources_a = ", ".join(
+                        source_names(chunks_a)
+                    )
+
                     gemini_key = st.secrets[
                         "GEMINI_API_KEY"
                     ]
@@ -238,7 +293,7 @@ with tab_a:
                     response = (
                         client.models.generate_content(
                             model="gemini-3.5-flash-lite",
-                            contents=question_a
+                            contents=prompt_a
                         )
                     )
 
@@ -257,6 +312,7 @@ with tab_a:
                         model_id="gemini-3.5-flash-lite",
                         question=question_a,
                         latency_seconds=latency,
+                        source_reference=sources_a,
                         response_text=answer,
                     )
 
@@ -270,6 +326,17 @@ with tab_a:
                         f"{latency:.2f} seconds. "
                         f"Recorded as {run_id}."
                     )
+
+                    if sources_a:
+                        st.caption(
+                            "Document source(s): "
+                            + sources_a
+                        )
+                    else:
+                        st.caption(
+                            "No relevant document passage "
+                            "was retrieved for this question."
+                        )
 
                 except Exception as error:
 
@@ -328,6 +395,28 @@ with tab_b:
 
                 try:
 
+                    if not research_documents:
+                        raise ValueError(
+                            "No readable research documents "
+                            "are available from Google Drive."
+                        )
+
+                    chunks_b = (
+                        retrieve_relevant_chunks(
+                            question_b,
+                            research_documents
+                        )
+                    )
+
+                    prompt_b = build_grounded_prompt(
+                        question_b,
+                        chunks_b
+                    )
+
+                    sources_b = ", ".join(
+                        source_names(chunks_b)
+                    )
+
                     cohere_key = st.secrets[
                         "COHERE_API_KEY"
                     ]
@@ -341,7 +430,7 @@ with tab_b:
                         messages=[
                             {
                                 "role": "user",
-                                "content": question_b
+                                "content": prompt_b
                             }
                         ]
                     )
@@ -394,6 +483,7 @@ with tab_b:
                             ),
                             question=question_b,
                             latency_seconds=latency,
+                            source_reference=sources_b,
                             response_text=answer,
                         )
 
@@ -409,6 +499,17 @@ with tab_b:
                             f"{latency:.2f} seconds. "
                             f"Recorded as {run_id}."
                         )
+
+                        if sources_b:
+                            st.caption(
+                                "Document source(s): "
+                                + sources_b
+                            )
+                        else:
+                            st.caption(
+                                "No relevant document passage "
+                                "was retrieved for this question."
+                            )
 
                 except Exception as error:
 
@@ -443,10 +544,10 @@ with tab_c:
     st.info(
         "This area records and visualises the results generated by "
         "the two chatbots using the same fields defined in "
-        "research_data/results_template.csv. Current manual chatbot "
-        "runs are marked PILOT because the shared document-grounding "
-        "stage is not yet complete. PILOT rows must not be included "
-        "in the final formal analysis."
+        "research_data/results_template.csv. The chatbots now use "
+        "the same Google Drive document corpus and the same retrieval "
+        "method. Current manual runs remain marked PILOT until the "
+        "formal 20-question benchmark is populated and frozen."
     )
 
     st.caption(
@@ -878,25 +979,33 @@ with tab_c:
         "Google Drive document connection status"
     ):
 
-        try:
+        if document_connection_error:
+
+            st.error(
+                "Google Drive connection could not "
+                "be completed: "
+                + document_connection_error
+            )
+
+        else:
 
             files = list_folder_files()
 
             st.success(
                 f"Connected to Google Drive. "
-                f"{len(files)} file(s) available."
+                f"{len(research_documents)} readable "
+                f"document(s) loaded from "
+                f"{len(files)} file(s)."
             )
 
-            for file in files:
+            for document in research_documents:
                 st.write(
-                    f"- {file['name']}"
+                    f"- {document['name']}"
                 )
 
-        except Exception:
-
-            st.error(
-                "Google Drive connection could not "
-                "be completed. Check the Streamlit "
-                "Secrets, Drive API status and folder "
-                "sharing permissions."
-            )
+            if skipped_documents:
+                st.caption(
+                    "Skipped unsupported or unreadable "
+                    "files: "
+                    + ", ".join(skipped_documents)
+                )
