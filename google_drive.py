@@ -48,18 +48,40 @@ def list_folder_files():
         "GOOGLE_DRIVE_FOLDER_ID"
     ]
 
-    result = drive_service.files().list(
-        q=(
-            f"'{folder_id}' in parents "
-            "and trashed = false "
-            f"and mimeType = '{PDF_MIME}'"
-        ),
-        fields="files(id, name, mimeType)",
-        orderBy="name",
-        pageSize=1000
-    ).execute()
+    files = []
+    page_token = None
 
-    return result.get("files", [])
+    while True:
+
+        result = drive_service.files().list(
+            q=(
+                f"'{folder_id}' in parents "
+                "and trashed = false "
+                f"and mimeType = '{PDF_MIME}'"
+            ),
+            fields=(
+                "nextPageToken,"
+                "files(id, name, mimeType)"
+            ),
+            orderBy="name",
+            pageSize=1000,
+            pageToken=page_token,
+            supportsAllDrives=True,
+            includeItemsFromAllDrives=True
+        ).execute()
+
+        files.extend(
+            result.get("files", [])
+        )
+
+        page_token = result.get(
+            "nextPageToken"
+        )
+
+        if not page_token:
+            break
+
+    return files
 
 
 def download_file_bytes(file_id):
