@@ -263,3 +263,21 @@ Relevant implementation commits include `1eb636d` (Drive document-content readin
 - This incident reinforces the project's simplification principle: external I/O should not block the basic user interface, and controlled shared preprocessing should not contaminate the independent model comparison.
 
 Relevant recovery commits include `eaf0e8d` (lazy Drive loading so tabs render immediately) and `630a979` (fair latency timing after shared retrieval).
+
+
+## 24 September 2026 - Practical limitation observed: corpus usefulness and scalability
+
+- Early hands-on use of the Google Drive document-grounded prototype produced an important practical observation: a large proportion of the available documents were not useful for the intended technical question-answering task.
+- Increasing the number of documents did not automatically improve answer quality. Irrelevant, repetitive, poorly structured or weakly related material increased the amount of preprocessing and retrieval work without necessarily providing better evidence for the chatbot responses.
+- The current implementation is intentionally simple: files are downloaded from Google Drive, text is extracted, documents are split into fixed-size chunks, and all chunks are searched using keyword overlap.
+- This approach is transparent and appropriate for a controlled MSc prototype, but it is computationally inefficient when the document corpus becomes large because the application must process and score an increasing number of chunks for every query.
+- In practical use the system therefore felt slower and more limited as the corpus grew.
+- This observation should be retained for the final discussion and limitations sections: document quantity is not equivalent to document usefulness, and corpus curation may have a greater effect on practical performance than simply adding more source material.
+- The experience supports keeping the formal experimental corpus deliberately small, relevant and controlled rather than treating Google Drive as an unrestricted document repository.
+- A curated corpus also improves experimental validity because it becomes easier to identify the source of expected answers, verify retrieved passages and score faithfulness consistently.
+- The present implementation should therefore be described as a lightweight, explainable retrieval prototype rather than a production-scale document search system.
+- Potential future work could evaluate semantic/vector retrieval, document indexing or pre-processing pipelines, but these are outside the intended scope of the current study unless required by the research question.
+
+### Practical design consequence
+
+The preferred formal research setup is now a small curated set of high-value engineering documents rather than a large heterogeneous Drive folder. Documents that do not contribute to the PLC, SCADA, Industrial Automation or Operational Technology benchmark should be excluded from the formal corpus.
