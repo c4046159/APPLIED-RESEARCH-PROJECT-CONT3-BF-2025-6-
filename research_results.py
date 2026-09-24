@@ -394,6 +394,13 @@ def add_result(result):
         orient="records"
     )
 
+    if not saved:
+        st.warning(
+            "The result is visible in this session but could not be "
+            "written to the GitHub results file: "
+            + message
+        )
+
     return saved, message
 
 
