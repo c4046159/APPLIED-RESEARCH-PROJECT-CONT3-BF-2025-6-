@@ -216,7 +216,7 @@ These notes support interpretation but do not replace the numeric scoring rubric
 
 Raw test outputs use the field structure defined in `research_data/results_template.csv`.
 
-During testing, results are accumulated in Streamlit Session State. At the end of a testing session, the researcher should select **Save session to Google Drive**. The application creates a new timestamped CSV file in the dedicated Google Drive results folder. Existing session files are not overwritten.
+During testing, results are accumulated in Streamlit Session State. At the end of a testing session, the researcher should select **Save session to Google Drive**. The application creates a new timestamped CSV file in the same shared Google Drive research folder used by the PDF corpus. Existing session files are not overwritten. The timestamped CSV files are stored alongside the shared PDF corpus.
 
 The local **Download research results CSV** control should also be used when a local backup is required.
 
