@@ -281,3 +281,16 @@ Relevant recovery commits include `eaf0e8d` (lazy Drive loading so tabs render i
 ### Practical design consequence
 
 The preferred formal research setup is now a small curated set of high-value engineering documents rather than a large heterogeneous Drive folder. Documents that do not contribute to the PLC, SCADA, Industrial Automation or Operational Technology benchmark should be excluded from the formal corpus.
+
+
+## 24 September 2026 - Corpus format simplified to PDF only
+
+- A further scope decision was made to use PDF documents only for the document-grounded research exercise.
+- Word documents and other document formats were removed from the intended research corpus.
+- This reduces implementation complexity and keeps the corpus format consistent across all test material.
+- The Google Drive ingestion code was simplified so that only files with the PDF MIME type are listed and processed.
+- DOCX, native Google Docs, TXT, Markdown and other formats are no longer part of the formal ingestion path.
+- The unused `python-docx` dependency was removed from `requirements.txt`.
+- PDF text extraction continues to use `pypdf`.
+- This decision improves reproducibility because every source document is handled by the same extraction process.
+- The formal benchmark should therefore be created only from the final curated PDF corpus.
