@@ -311,3 +311,13 @@ The preferred formal research setup is now a small curated set of high-value eng
 - This approach was selected because it is simpler, easier to explain and more appropriate for the MSc prototype than the earlier GitHub-as-database experiment.
 
 Relevant commits include `11f4ef7` (Drive CSV upload helper) and `50fd96b` (TESTS and METRICS session-save control).
+
+
+## 24 September 2026 - Drive storage simplified to one shared folder
+
+- The Google Drive storage design was simplified again so the same shared research folder is used for both the PDF corpus and the timestamped session-result CSV files.
+- The application now uses the existing `GOOGLE_DRIVE_FOLDER_ID` for both reading PDFs and uploading session results.
+- The separate `GOOGLE_DRIVE_RESULTS_FOLDER_ID` secret is no longer required.
+- The service account must therefore have Editor access to the shared research folder rather than Viewer access.
+- PDF ingestion remains restricted to files with the PDF MIME type, so timestamped CSV result files stored in the same folder are ignored by the document-grounding corpus loader.
+- This keeps the configuration minimal while preserving separation at application level: PDFs are treated as source documents; CSV files are treated only as saved research evidence.
