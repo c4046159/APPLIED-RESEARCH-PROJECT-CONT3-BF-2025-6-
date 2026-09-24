@@ -84,6 +84,33 @@ Both systems must receive the same question and the same retrieved document cont
 
 Do not modify prompts, retrieval rules, scoring criteria or model selections during the formal run.
 
+
+
+## 6A. Shared document retrieval implementation
+
+The final prototype uses one retrieval method for both chatbot systems. This is deliberately implemented in the Streamlit application rather than using provider-specific retrieval services.
+
+The current fixed retrieval configuration is:
+
+- Supported document formats: PDF, DOCX, TXT, Markdown and native Google Docs.
+- Google Drive access: service account with read-only Drive scope.
+- Google Docs are exported as plain text before processing.
+- PDF text is extracted with `pypdf`.
+- DOCX text is extracted with `python-docx`.
+- TXT/Markdown content is decoded as UTF-8 text.
+- Each document is divided into fixed chunks of 180 words.
+- Consecutive chunks overlap by 30 words.
+- Query and chunk text are reduced to lowercase alphanumeric terms with a small set of common stop words removed.
+- Relevance is calculated as the number of unique query terms that also occur in a chunk.
+- Only chunks with a score greater than zero are considered relevant.
+- The top four chunks are selected using the same deterministic ranking rule for both models.
+- Ties are resolved by source filename and chunk number so repeated retrieval is deterministic.
+- The selected passages are inserted into one common grounded prompt.
+- Both models are instructed to use only the supplied document context and to state that the information is not available in the provided documentation when the context does not support an answer.
+- Source filenames used for a response are recorded in the result row.
+
+These settings must remain unchanged during formal data collection. Any later change to chunk size, overlap, stop-word handling, number of retrieved chunks or prompt wording requires a documented new experiment/version rather than being mixed with existing formal results.
+
 ## 7. Step-by-step execution procedure
 
 For each test question:
