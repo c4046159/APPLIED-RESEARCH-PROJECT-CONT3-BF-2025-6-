@@ -177,11 +177,11 @@ The consistency score is assigned once per question/model group and may be repea
 
 ## 10. Latency
 
-Latency is the observed end-to-end time from submitting the question in the Streamlit application to receiving the displayed answer.
+Latency is measured for the model API request after the common document retrieval and grounded-prompt construction have completed.
 
 Record latency in seconds to at least two decimal places where automated timing allows.
 
-Latency must be described in the report as observed end-to-end response time. It includes network, provider routing and application overhead and therefore should not be presented as pure model inference speed.
+The common retrieval stage is deliberately excluded from the A/B model latency measurement because Drive loading and Streamlit caching could otherwise disadvantage whichever chatbot is tested first. The recorded value should therefore be described as observed model/API response time. It still includes network and provider-routing overhead and must not be presented as pure model inference speed.
 
 ## 11. Error recording
 
