@@ -294,3 +294,20 @@ The preferred formal research setup is now a small curated set of high-value eng
 - PDF text extraction continues to use `pypdf`.
 - This decision improves reproducibility because every source document is handled by the same extraction process.
 - The formal benchmark should therefore be created only from the final curated PDF corpus.
+
+
+## 24 September 2026 - Timestamped session results saved to Google Drive
+
+- The final results-storage approach was implemented using Google Drive rather than GitHub persistence.
+- Results continue to accumulate in Streamlit Session State while a testing session is active.
+- The TESTS and METRICS tab now includes a `Save session to Google Drive` button.
+- Selecting the button converts the current results table to CSV and uploads one new timestamped file, for example `research_results_20260924_215430.csv`.
+- Saving is deliberately manual rather than automatic after every chatbot response.
+- Each save creates a new file instead of replacing an earlier session file, preserving an audit trail of testing sessions.
+- The existing local CSV download remains available as an independent backup/export route.
+- A dedicated Streamlit secret named `GOOGLE_DRIVE_RESULTS_FOLDER_ID` identifies the Drive folder used for research-results files.
+- The Google service account must have write permission to that results folder. The PDF corpus can remain read-only.
+- The Drive OAuth configuration now combines read-only access for the corpus with `drive.file` access for application-created results files.
+- This approach was selected because it is simpler, easier to explain and more appropriate for the MSc prototype than the earlier GitHub-as-database experiment.
+
+Relevant commits include `11f4ef7` (Drive CSV upload helper) and `50fd96b` (TESTS and METRICS session-save control).
