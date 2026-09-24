@@ -190,3 +190,32 @@ The successful Cohere retest closes this incremental build cycle with both final
 - The deployed Streamlit application requires a `GITHUB_RESULTS_TOKEN` secret to write to the cumulative dataset. This token should be a fine-grained GitHub token restricted to this repository with Contents read/write permission and should never be committed to the repository.
 - The `research-data` branch is intentionally separate from `main` so repeated experimental data commits do not repeatedly redeploy the application.
 - Relevant commits include `7e15f5e` (canonical results file), `6735b9c` (automatic repository loading), `800a7ba` (persistent cumulative GitHub storage), `aad9a84` (persistence failure warning), `42f1f8e` (GitHub HTTP dependency) and `415c9e3` (automatic dashboard loading with no upload control).
+
+
+## 24 September 2026 - Application failure and architectural backtrack
+
+- After introducing automatic GitHub-based result persistence, the deployed Streamlit application stopped working.
+- Review identified one immediate technical failure in `requirements.txt`: the dependency edit had produced the literal text `pandas\\nrequests\\n` rather than valid separate package lines. This could prevent Streamlit from completing dependency installation.
+- The failure also highlighted that the GitHub-as-database design had become unnecessarily complex for the research objective. It introduced token management, GitHub REST calls, branch-specific data handling, remote file SHA updates and additional failure points that were not required to answer the research question.
+- The decision was therefore made to backtrack and simplify the architecture.
+- GitHub is returned to its intended role as source-code and version-control storage only.
+- The `research-data` branch and GitHub persistence experiment are no longer used by the application.
+- `research_results.py` has been simplified back to Streamlit session-state storage.
+- Each chatbot run still creates a new timestamped result row with run ID, question, model, response, latency and error information.
+- The `TESTS and METRICS` tab still provides result counts, latency visualisation, manual scoring, score summaries, the full result table and CSV download.
+- Manual result scoring remains transparent and uses the documented correctness, relevance, faithfulness and consistency rubric.
+- The application no longer requires `GITHUB_RESULTS_TOKEN`, GitHub API calls or the `requests` dependency.
+- `requirements.txt` was repaired and reduced to the packages required by the actual prototype.
+- Current result storage is deliberately temporary during pilot development: results grow during the active Streamlit session and must be downloaded as CSV before ending the session.
+- Durable storage will be implemented later using the existing Google Drive research environment, after the Drive document-reading path has been validated.
+- This backtrack is treated as a research/development decision: simplicity, explainability and experimental control take priority over unnecessary infrastructure complexity.
+
+### Simplified architecture after backtrack
+
+- GitHub: source code and version history.
+- Streamlit: application runtime and temporary result capture.
+- Google Drive: research-safe engineering documents; planned durable research-results storage.
+- Gemini and Cohere: the two frozen comparison models.
+- CSV: transparent research data format for recorded responses and scores.
+
+Relevant recovery commits include `9fdf29c` (simplify results helper), `9b991fd` (remove GitHub persistence from the metrics dashboard), `025e351` (remove unused GitHub results placeholder) and `78e7a62` (repair requirements and remove the abandoned persistence dependency).
