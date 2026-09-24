@@ -164,7 +164,7 @@ def upload_results_csv(
     drive_service = get_drive_service()
 
     results_folder_id = st.secrets[
-        "GOOGLE_DRIVE_RESULTS_FOLDER_ID"
+        "GOOGLE_DRIVE_FOLDER_ID"
     ]
 
     metadata = {
