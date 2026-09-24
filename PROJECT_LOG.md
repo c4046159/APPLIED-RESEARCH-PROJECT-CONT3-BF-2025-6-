@@ -321,3 +321,24 @@ Relevant commits include `11f4ef7` (Drive CSV upload helper) and `50fd96b` (TEST
 - The service account must therefore have Editor access to the shared research folder rather than Viewer access.
 - PDF ingestion remains restricted to files with the PDF MIME type, so timestamped CSV result files stored in the same folder are ignored by the document-grounding corpus loader.
 - This keeps the configuration minimal while preserving separation at application level: PDFs are treated as source documents; CSV files are treated only as saved research evidence.
+
+
+## 24 September 2026 - Severe scalability limit observed at 883 PDFs / 2.08 GB
+
+- After reducing the Google Drive corpus to PDF-only documents, the shared research folder still contained 883 PDF files with a combined size of approximately 2.08 GB.
+- At this scale, the current Streamlit document-grounding architecture became effectively unusable in practical terms.
+- The present implementation downloads and extracts text from the available PDFs, divides the extracted text into fixed-size chunks, and then evaluates those chunks using a simple keyword-overlap retrieval method.
+- With 883 PDFs and approximately 2.08 GB of source material, the amount of I/O, PDF parsing, memory use and repeated chunk scoring produces unacceptable delay for an interactive chatbot workflow.
+- The practical result is that the document-grounded prototype cannot provide a responsive user experience when operating over this large, heterogeneous corpus using the current implementation.
+- This is a significant research finding because it demonstrates that a technically functional retrieval approach can still be unsuitable in practice when corpus size and document quality are not tightly controlled.
+- The current system therefore does not compete effectively, at this scale and with this architecture, with a conventional chatbot API that relies on the provider's own pre-trained model knowledge and highly optimised infrastructure.
+- The comparison must be expressed carefully in the final report: the observed limitation applies to this lightweight Streamlit + Google Drive + local PDF extraction + keyword-retrieval implementation. It does not demonstrate that all retrieval-augmented generation systems are slower or inferior to general-purpose chatbot APIs.
+- A normal chatbot API can return answers quickly because it does not need this application to download, parse and search hundreds of local documents before every interaction. However, such answers may rely on the model's pre-training rather than on controlled, auditable project documents.
+- The core trade-off observed so far is therefore between controlled document grounding and practical responsiveness. In this implementation, increasing the corpus to hundreds of PDFs causes the cost of retrieval and preprocessing to dominate the interaction.
+- The current main conclusion is that the proposed architecture is not scalable enough for a large document repository and becomes impractical long before reaching the theoretical Google Drive file limit.
+- For the formal experiment, the corpus should therefore be reduced drastically to a small, curated set of documents that directly support the 20 benchmark questions.
+- Future work could investigate persistent indexing, vector databases, embeddings, semantic search, background pre-processing, document stores or provider-native retrieval systems. These alternatives are outside the intended scope of the present MSc implementation but represent more realistic approaches for production-scale document-grounded systems.
+
+### Provisional interpretation
+
+At 883 PDFs / 2.08 GB, the bottleneck is no longer the language model API. The dominant cost comes from document access, PDF parsing and retrieval. The prototype therefore demonstrates the feasibility of controlled document grounding at small scale, but also exposes a clear scalability boundary for the chosen lightweight architecture.
