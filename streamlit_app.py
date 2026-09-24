@@ -13,7 +13,6 @@ from research_results import (
     add_result,
     get_results_dataframe,
     next_run_id,
-    refresh_results,
     save_edited_results,
 )
 
@@ -451,36 +450,12 @@ with tab_c:
     )
 
     st.caption(
-        "Canonical dataset: research_data/results.csv "
-        "on the GitHub research-data branch. "
-        "The dashboard reads it automatically."
+        "Results are recorded in the current Streamlit session. "
+        "Each chatbot run adds a new timestamped row. "
+        "Download the CSV at the end of the testing session."
     )
 
-    if (
-        "GITHUB_RESULTS_TOKEN"
-        in st.secrets
-        and st.secrets[
-            "GITHUB_RESULTS_TOKEN"
-        ]
-    ):
-        st.success(
-            "GitHub results persistence is configured."
-        )
-    else:
-        st.warning(
-            "GITHUB_RESULTS_TOKEN is not configured. "
-            "Results can be viewed in this session but "
-            "cannot yet be appended to the GitHub CSV."
-        )
-
-    if st.button(
-        "Refresh results from GitHub",
-        key="refresh_results_button"
-    ):
-        refresh_results()
-        st.rerun()
-
-    results = refresh_results()
+    results = get_results_dataframe()
 
 
     if results.empty:
@@ -806,26 +781,14 @@ with tab_c:
                 "scored_by"
             ] = scored_by
 
-            (
-                _,
-                scoring_saved,
-                scoring_message,
-            ) = save_edited_results(
+            save_edited_results(
                 results
             )
 
-            if scoring_saved:
-                st.success(
-                    f"Scoring saved to GitHub for "
-                    f"{selected_run_id}."
-                )
-            else:
-                st.warning(
-                    "Scoring was updated in the current "
-                    "session but could not be written to "
-                    "GitHub: "
-                    + scoring_message
-                )
+            st.success(
+                f"Scoring saved for "
+                f"{selected_run_id}."
+            )
 
             st.rerun()
 
@@ -904,12 +867,11 @@ with tab_c:
             key="download_results"
         )
 
-        st.info(
-            "The primary research record is the cumulative "
-            "research_data/results.csv file on the GitHub "
-            "research-data branch. Each chatbot run appends "
-            "a new timestamped row. The download button is "
-            "kept only for local backup/export."
+        st.warning(
+            "Current results are stored only for this Streamlit "
+            "session. Download the CSV before ending the session. "
+            "Persistent storage will be added later through the "
+            "same Google Drive research environment."
         )
 
     with st.expander(
