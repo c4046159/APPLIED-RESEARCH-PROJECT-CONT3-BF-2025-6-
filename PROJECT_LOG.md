@@ -360,3 +360,18 @@ At 883 PDFs / 2.08 GB, the bottleneck is no longer the language model API. The d
 Cohere Command A+: slower responses, but apparently stronger accuracy/answer quality in pilot use.
 
 Gemini 3.5 Flash-Lite: faster responses, but apparently less accurate or complete in the pilot comparisons observed so far.
+
+
+## 24 September 2026 - Google Drive listing pagination corrected
+
+- The Drive listing was still returning only 100 PDF files despite the requested `pageSize=1000`.
+- The issue was identified as pagination rather than the nominal page-size setting.
+- Google Drive can return a partial page and provides `nextPageToken` when additional results remain.
+- The previous implementation requested only `files(id, name, mimeType)`, so the response did not expose `nextPageToken` and the application could not continue past the first result page.
+- `list_folder_files()` now requests `nextPageToken`, passes it back as `pageToken`, and loops until no further page token is returned.
+- Support for items from shared drives was also enabled with `supportsAllDrives=True` and `includeItemsFromAllDrives=True`.
+- This correction allows the application to discover more than 100 PDFs and, in principle, the full 883-file corpus currently present in the shared folder.
+- This does not solve the previously observed performance problem. Discovering all 883 PDFs will increase the amount of subsequent download, parsing and retrieval work and may therefore make the current architecture even less practical at full corpus scale.
+- The formal experiment should still use a small curated subset even though the listing function can now enumerate the full repository.
+
+Relevant commit: `e9ca62d` (paginate Google Drive PDF listing beyond first page).
