@@ -52,7 +52,7 @@ def list_folder_files():
         ),
         fields="files(id, name, mimeType)",
         orderBy="name",
-        pageSize=100
+        pageSize=1000
     ).execute()
 
     return result.get("files", [])
