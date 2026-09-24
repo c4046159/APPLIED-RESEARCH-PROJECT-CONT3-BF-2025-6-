@@ -4,12 +4,16 @@ import streamlit as st
 
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload
+from googleapiclient.http import (
+    MediaIoBaseDownload,
+    MediaIoBaseUpload,
+)
 from pypdf import PdfReader
 
 
 DRIVE_SCOPE = [
-    "https://www.googleapis.com/auth/drive.readonly"
+    "https://www.googleapis.com/auth/drive.readonly",
+    "https://www.googleapis.com/auth/drive.file",
 ]
 
 PDF_MIME = "application/pdf"
@@ -149,3 +153,42 @@ def load_research_documents():
             )
 
     return documents, skipped_files
+
+
+
+def upload_results_csv(
+    csv_bytes,
+    file_name
+):
+
+    drive_service = get_drive_service()
+
+    results_folder_id = st.secrets[
+        "GOOGLE_DRIVE_RESULTS_FOLDER_ID"
+    ]
+
+    metadata = {
+        "name": file_name,
+        "parents": [
+            results_folder_id
+        ],
+        "mimeType": "text/csv",
+    }
+
+    media = MediaIoBaseUpload(
+        io.BytesIO(csv_bytes),
+        mimetype="text/csv",
+        resumable=False
+    )
+
+    created_file = (
+        drive_service.files()
+        .create(
+            body=metadata,
+            media_body=media,
+            fields="id, name, createdTime"
+        )
+        .execute()
+    )
+
+    return created_file
