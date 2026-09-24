@@ -35,3 +35,21 @@ def get_drive_service():
     )
 
     return drive_service
+
+
+def list_folder_files():
+
+    drive_service = get_drive_service()
+
+    folder_id = st.secrets[
+        "GOOGLE_DRIVE_FOLDER_ID"
+    ]
+
+    result = drive_service.files().list(
+        q=f"'{folder_id}' in parents and trashed = false",
+        fields="files(id, name, mimeType)"
+    ).execute()
+
+    return result.get("files", [])
+
+
