@@ -11,6 +11,7 @@ from google import genai
 from google_drive import (
     list_folder_files,
     load_research_documents,
+    upload_results_csv,
 )
 from document_retrieval import (
     build_grounded_prompt,
@@ -676,9 +677,9 @@ with tab_c:
         if not latency_values.dropna().empty:
 
             st.caption(
-                "Latency is the observed end-to-end "
-                "response time measured by the "
-                "Streamlit application."
+                "Latency is the observed model/API "
+                "response time measured after shared "
+                "document retrieval has completed."
             )
 
         st.markdown(
@@ -979,11 +980,58 @@ with tab_c:
             key="download_results"
         )
 
-        st.warning(
-            "Current results are stored only for this Streamlit "
-            "session. Download the CSV before ending the session. "
-            "Persistent storage will be added later through the "
-            "same Google Drive research environment."
+        if st.button(
+            "Save session to Google Drive",
+            key="save_session_drive"
+        ):
+
+            try:
+
+                session_timestamp = (
+                    datetime.now(
+                        ZoneInfo("Europe/London")
+                    )
+                    .strftime("%Y%m%d_%H%M%S")
+                )
+
+                session_file_name = (
+                    "research_results_"
+                    + session_timestamp
+                    + ".csv"
+                )
+
+                uploaded_file = (
+                    upload_results_csv(
+                        csv_data,
+                        session_file_name
+                    )
+                )
+
+                st.success(
+                    "Session saved to Google Drive as "
+                    + uploaded_file["name"]
+                    + "."
+                )
+
+                st.caption(
+                    "Google Drive file ID: "
+                    + uploaded_file["id"]
+                )
+
+            except Exception as error:
+
+                st.error(
+                    "The session could not be saved "
+                    "to Google Drive: "
+                    + str(error)
+                )
+
+        st.info(
+            "Results remain in the current Streamlit "
+            "session while the app is open. Save a "
+            "timestamped session CSV to Google Drive "
+            "for persistent research evidence, and "
+            "use the download button for a local backup."
         )
 
     with st.expander(
