@@ -342,3 +342,21 @@ Relevant commits include `11f4ef7` (Drive CSV upload helper) and `50fd96b` (TEST
 ### Provisional interpretation
 
 At 883 PDFs / 2.08 GB, the bottleneck is no longer the language model API. The dominant cost comes from document access, PDF parsing and retrieval. The prototype therefore demonstrates the feasibility of controlled document grounding at small scale, but also exposes a clear scalability boundary for the chosen lightweight architecture.
+
+
+## 24 September 2026 - Preliminary pilot observation: Cohere quality versus latency
+
+- Informal pilot testing produced a preliminary comparative observation between the two frozen chatbot systems.
+- Cohere Command A+ appeared to provide more accurate and more useful answers than Gemini 3.5 Flash-Lite for the engineering/document-grounded questions tested so far.
+- Cohere also appeared to take significantly longer to return its responses.
+- The emerging pilot pattern is therefore a possible quality-versus-latency trade-off: Cohere may provide stronger answer quality while Gemini may provide faster response times.
+- This observation is qualitative and provisional. It must not be reported as the final comparative conclusion until the controlled 20-question, three-repetition-per-model experiment has been completed and scored.
+- The formal dataset will be used to determine whether the apparent difference persists across correctness, relevance, faithfulness, consistency and model/API response-time measurements.
+- If the formal results reproduce this pattern, the discussion should consider whether increased latency is an acceptable trade-off for improved answer quality in an industrial engineering information-retrieval context.
+- Raw responses and scoring should be retained even when they contradict this preliminary observation so that the final conclusion remains evidence-led rather than expectation-led.
+
+### Current provisional pattern
+
+Cohere Command A+: slower responses, but apparently stronger accuracy/answer quality in pilot use.
+
+Gemini 3.5 Flash-Lite: faster responses, but apparently less accurate or complete in the pilot comparisons observed so far.
