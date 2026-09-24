@@ -219,3 +219,30 @@ The successful Cohere retest closes this incremental build cycle with both final
 - CSV: transparent research data format for recorded responses and scores.
 
 Relevant recovery commits include `9fdf29c` (simplify results helper), `9b991fd` (remove GitHub persistence from the metrics dashboard), `025e351` (remove unused GitHub results placeholder) and `78e7a62` (repair requirements and remove the abandoned persistence dependency).
+
+
+## 24 September 2026 - Shared Google Drive document grounding implemented
+
+- The next research milestone was implemented after the application architecture was simplified.
+- `google_drive.py` now reads the contents of supported research files rather than only listing filenames.
+- Supported formats are PDF, DOCX, TXT, Markdown and native Google Docs.
+- Standard Drive files are downloaded through the Drive API; native Google Docs are exported as plain text.
+- PDF extraction uses `pypdf`, DOCX extraction uses `python-docx`, and plain-text formats are decoded directly.
+- Unsupported, empty or unreadable files are skipped and reported in the Google Drive status section rather than stopping the full application.
+- A new `document_retrieval.py` module implements the common retrieval method used by both chatbot conditions.
+- Documents are divided into fixed 180-word chunks with a 30-word overlap.
+- Retrieval uses a transparent keyword-overlap score after lowercase tokenisation and removal of a small common stop-word set.
+- The top four relevant chunks are selected deterministically. Ties are resolved by filename and chunk number.
+- A single grounded-prompt function is used for both models. The prompt instructs the model to use only the supplied document context and to state that the answer is not available in the provided documentation when the retrieved context does not contain the answer.
+- Both Gemini and Cohere now receive context produced by the same document loader, chunking algorithm, retrieval algorithm and prompt template.
+- The loaded research corpus is cached by Streamlit for ten minutes so the documents are not repeatedly downloaded for each model request.
+- Each recorded result now includes the source filenames used to construct the context for that answer.
+- The interface displays the source filenames after each response and reports readable/skipped files in the Google Drive status area.
+- Manual interactions are still labelled `PILOT`. Formal testing must wait until the 20-question benchmark, reference answers and final research-safe corpus are populated and frozen.
+- This implementation intentionally avoids LangChain, vector databases, embeddings and provider-specific RAG services so the retrieval process remains simple, explainable and controlled.
+
+### Current research pipeline
+
+Google Drive -> common text extraction -> 180-word chunks -> keyword-overlap retrieval -> top four common passages -> identical grounded prompt -> Gemini/Cohere -> timestamped results and metrics.
+
+Relevant implementation commits include `1eb636d` (Drive document-content reading), `d6d31ed` (deterministic retrieval module) and `731484c` (ground both chatbots using the same retrieved context).
