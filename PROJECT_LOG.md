@@ -375,3 +375,23 @@ Gemini 3.5 Flash-Lite: faster responses, but apparently less accurate or complet
 - The formal experiment should still use a small curated subset even though the listing function can now enumerate the full repository.
 
 Relevant commit: `e9ca62d` (paginate Google Drive PDF listing beyond first page).
+
+
+## 24 September 2026 - Research-focus change and design limitations as evidence
+
+- The original direction of the project placed greater emphasis on the creation and implementation of the document-grounded chatbot application itself.
+- During the module, instructor/supervisor feedback indicated that implementation alone would not be sufficient for the Applied Research Project and that an empirical comparison of chatbot performance was required.
+- The project therefore changed from being primarily a system-development exercise into a comparative evaluation of two chatbot systems operating under controlled document-grounding conditions.
+- This change of emphasis occurred after substantial implementation work had already been completed and influenced the later project architecture, testing protocol, metrics design and formal research questions.
+- The resulting prototype should therefore be interpreted in light of this development history: the application was originally designed to demonstrate document-grounded chatbot functionality, while the later research requirement demanded repeatable comparative performance measurement.
+- The scalability limitations identified during implementation provide useful evidence about the consequences of that design history.
+- In particular, the 883-PDF / approximately 2.08 GB corpus exposed severe performance limitations in the lightweight Streamlit + Google Drive + local PDF extraction + keyword-retrieval architecture.
+- The Drive pagination correction also showed that the earlier 100-file result was not the real system limit. Once pagination was corrected, the application could discover the full corpus, but doing so made the underlying processing burden clearer rather than solving it.
+- This supports an important methodological distinction for the final report: a prototype can be technically functional for demonstrating a concept while still being unsuitable for large-scale comparative testing or production use.
+- The limitations should therefore be treated as research evidence rather than hidden as implementation failures. They show that the chosen architecture is appropriate only for a small, curated corpus and that scaling document-grounded retrieval requires a different technical approach.
+- The final dissertation should explain the research-focus change transparently and distinguish between (1) the original system-development objective, (2) the later empirically comparative research requirement, and (3) the architectural limitations discovered when the prototype was tested beyond a small controlled corpus.
+- This context does not invalidate the experiment. Instead, it explains why the final study combines software-development evidence with a controlled chatbot comparison and why the discussion must include feasibility, scalability and methodological trade-offs alongside model-quality results.
+
+### Implication for final discussion
+
+The project evolution itself is part of the evidence. The application demonstrates that a student-built, transparent document-grounding pipeline can support controlled comparison at small scale, but the same implementation becomes impractical when expanded to hundreds of PDFs. The later empirical comparison requirement therefore revealed limitations that may not have been visible if the work had remained only a build-and-demonstrate project.
