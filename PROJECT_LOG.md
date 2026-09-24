@@ -129,3 +129,30 @@ The successful Cohere retest closes this incremental build cycle with both final
 - User interface: research/module identity, student information, instructions, disclaimer, model information, bordered input areas and chat-style response display added.
 - Visual theme: Sheffield Hallam inspired, with provenance and limitations documented separately in `UI_THEME_NOTES.md`.
 - Next implementation milestone: shared research-safe engineering-document source for both chatbots, followed by controlled response-time and answer-quality testing.
+
+
+## 24 September 2026 - Google Drive research-document connection
+
+- Work began on connecting the frozen two-chatbot prototype to the shared research-safe Google Drive document source.
+- The project dependencies were extended with the Google Drive API/authentication packages and the planned PDF/DOCX extraction libraries: `google-api-python-client`, `google-auth`, `google-auth-httplib2`, `pypdf` and `python-docx`.
+- A new `google_drive.py` module was created using a Google service account and the read-only scope `https://www.googleapis.com/auth/drive.readonly`.
+- The module reads the service-account credentials from the Streamlit `gcp_service_account` secret and the target folder from `GOOGLE_DRIVE_FOLDER_ID`.
+- A `list_folder_files()` function was implemented to query the configured folder and return file ID, filename and MIME type.
+- The folder-listing query was refined to ignore deleted items and subfolders, sort results by filename and limit the initial research-folder listing to 100 files.
+- The initial Streamlit integration contained a stale `drive_reader` import as well as the new `google_drive` import. This duplication could prevent the application from starting because `drive_reader.py` does not form part of the current implementation.
+- The stale import was removed so the application now uses `google_drive.py` as the single Drive integration module.
+- The Drive folder query was also moved out of the top-level application startup path. A Drive configuration or permission problem will therefore no longer prevent the Gemini and Cohere tabs from loading.
+- The existing `TESTS and METRICS` tab is now used to validate the Drive connection and list the research documents available to the prototype.
+- The interface explicitly states that this stage validates Drive access only. The listed files are not yet being supplied to either chatbot.
+- The frozen visual design and the frozen Gemini/Cohere provider configuration were preserved. These changes are functional additions required by the research method rather than aesthetic redesign.
+- Relevant commits include `7485526` (harden Drive folder listing), `48ec82a` (add Drive status to tests tab) and `2fb414d` (remove stale Drive import and defer the Drive check to the tests tab).
+
+### Current Drive milestone status
+
+- Google Drive service-account integration: implemented in code.
+- Research-folder file listing: implemented in code.
+- Deployed connection/permissions: must be confirmed in Streamlit using the configured secrets and shared-folder permissions.
+- PDF/DOCX/TXT/Google Docs text extraction: not yet implemented.
+- Common chunking/retrieval: not yet implemented.
+- Supplying identical document context to Gemini and Cohere: not yet implemented.
+- Formal experimental data collection: must not begin until the shared document-grounding path is complete and validated.
