@@ -246,3 +246,20 @@ Relevant recovery commits include `9fdf29c` (simplify results helper), `9b991fd`
 Google Drive -> common text extraction -> 180-word chunks -> keyword-overlap retrieval -> top four common passages -> identical grounded prompt -> Gemini/Cohere -> timestamped results and metrics.
 
 Relevant implementation commits include `1eb636d` (Drive document-content reading), `d6d31ed` (deterministic retrieval module) and `731484c` (ground both chatbots using the same retrieved context).
+
+
+## 24 September 2026 - Drive startup blocking incident and recovery
+
+- After the first document-grounding implementation, the deployed Streamlit page rendered the project header and summary but the chatbot tabs did not appear.
+- The cause was identified in the application startup sequence: `get_research_documents()` was being called before `st.tabs()`.
+- That function connects to Google Drive and may download and parse multiple documents. Streamlit therefore displayed the already-rendered header while waiting for the Drive operation to finish, making the tabs appear to have disappeared.
+- The research-document load was moved out of application startup.
+- The tabs now render without waiting for Google Drive.
+- Documents are loaded lazily only when a chatbot question is submitted or when the researcher explicitly selects the Google Drive document-check control.
+- The document corpus remains cached for ten minutes after a successful load, keeping repeated pilot questions simple and avoiding unnecessary repeated downloads.
+- A second methodological issue was corrected at the same time: model latency is now timed only after common document retrieval and prompt construction have completed.
+- This avoids giving the first-tested chatbot an unfair latency penalty for loading the shared Drive corpus while the second chatbot benefits from the cache.
+- The measured metric is therefore now documented as observed model/API response time rather than total application end-to-end time.
+- This incident reinforces the project's simplification principle: external I/O should not block the basic user interface, and controlled shared preprocessing should not contaminate the independent model comparison.
+
+Relevant recovery commits include `eaf0e8d` (lazy Drive loading so tabs render immediately) and `630a979` (fair latency timing after shared retrieval).
