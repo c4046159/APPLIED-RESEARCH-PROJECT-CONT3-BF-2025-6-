@@ -156,3 +156,20 @@ The successful Cohere retest closes this incremental build cycle with both final
 - Common chunking/retrieval: not yet implemented.
 - Supplying identical document context to Gemini and Cohere: not yet implemented.
 - Formal experimental data collection: must not begin until the shared document-grounding path is complete and validated.
+
+
+## 24 September 2026 - Research results capture and metrics dashboard
+
+- The purpose of the existing `TESTS and METRICS` tab was clarified: it is the research-results area for recording, reviewing and visualising chatbot performance rather than primarily a Google Drive status page.
+- A new `research_results.py` module was added using the exact field structure already defined in `research_data/results_template.csv`.
+- Each successful or failed chatbot call now records a result row containing the run ID, chatbot/provider/model, question, timestamp, observed end-to-end latency, full response text, error status and error message.
+- Current manual chatbot interactions are deliberately labelled `PILOT` and `Pilot` in the test/domain fields. These rows validate the recording workflow but must not be included in the final formal analysis because shared document grounding and the fixed formal question set are not yet complete.
+- Correctness, relevance, faithfulness, consistency, qualitative notes and scorer identity are not generated automatically. They are entered manually in the results tab so that evaluation remains transparent and based on the documented rubric/reference answers rather than self-scoring by the tested systems.
+- The application automatically calculates `total_quality_0_6` only when correctness, relevance and faithfulness have all been scored.
+- The results dashboard now shows run counts, error counts, mean observed response-time comparison and mean correctness/relevance/faithfulness scores when scoring data is available.
+- The full recorded dataset is displayed in the application and can be exported using the same CSV field structure as `results_template.csv`.
+- A previously exported research-results CSV can be loaded back into the dashboard for continued review.
+- The Google Drive connection check remains available as a secondary expandable technical-status section rather than occupying the primary metrics view.
+- Research results are currently stored in Streamlit session state while the app is running. Because Streamlit session state is not durable research storage, the interface explicitly requires the CSV to be downloaded at the end of each testing session. Durable automatic storage in the research Google Drive folder can be added later once a deliberate write-access design is approved.
+- `pandas` was added as an explicit project dependency for CSV handling and descriptive result summaries.
+- Relevant commits include `418f230` (research results helpers), `aa11c7f` (pandas dependency) and `10558b2` (automatic run capture and research metrics dashboard).
