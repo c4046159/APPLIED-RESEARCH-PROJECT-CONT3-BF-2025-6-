@@ -12,8 +12,8 @@ from google_drive import list_folder_files
 from research_results import (
     add_result,
     get_results_dataframe,
-    load_results_dataframe,
     next_run_id,
+    refresh_results,
     save_edited_results,
 )
 
@@ -450,47 +450,38 @@ with tab_c:
         "in the final formal analysis."
     )
 
-    uploaded_results = st.file_uploader(
-        "Load a previously downloaded results CSV",
-        type="csv",
-        key="results_upload"
+    st.caption(
+        "Canonical dataset: research_data/results.csv "
+        "on the GitHub research-data branch. "
+        "The dashboard reads it automatically."
     )
 
-    if uploaded_results is not None:
+    if (
+        "GITHUB_RESULTS_TOKEN"
+        in st.secrets
+        and st.secrets[
+            "GITHUB_RESULTS_TOKEN"
+        ]
+    ):
+        st.success(
+            "GitHub results persistence is configured."
+        )
+    else:
+        st.warning(
+            "GITHUB_RESULTS_TOKEN is not configured. "
+            "Results can be viewed in this session but "
+            "cannot yet be appended to the GitHub CSV."
+        )
 
-        if st.button(
-            "Load uploaded results",
-            key="load_results_button"
-        ):
+    if st.button(
+        "Refresh results from GitHub",
+        key="refresh_results_button"
+    ):
+        refresh_results()
+        st.rerun()
 
-            try:
+    results = refresh_results()
 
-                uploaded_dataframe = pd.read_csv(
-                    uploaded_results
-                )
-
-                loaded, missing = (
-                    load_results_dataframe(
-                        uploaded_dataframe
-                    )
-                )
-
-                if loaded:
-                    st.success(
-                        "Results CSV loaded."
-                    )
-                    st.rerun()
-                else:
-                    st.error(
-                        "The CSV is missing required "
-                        "columns: "
-                        + ", ".join(missing)
-                    )
-
-            except Exception as error:
-                st.error(error)
-
-    results = get_results_dataframe()
 
     if results.empty:
 
@@ -815,12 +806,26 @@ with tab_c:
                 "scored_by"
             ] = scored_by
 
-            save_edited_results(results)
-
-            st.success(
-                f"Scoring saved for "
-                f"{selected_run_id}."
+            (
+                _,
+                scoring_saved,
+                scoring_message,
+            ) = save_edited_results(
+                results
             )
+
+            if scoring_saved:
+                st.success(
+                    f"Scoring saved to GitHub for "
+                    f"{selected_run_id}."
+                )
+            else:
+                st.warning(
+                    "Scoring was updated in the current "
+                    "session but could not be written to "
+                    "GitHub: "
+                    + scoring_message
+                )
 
             st.rerun()
 
@@ -899,14 +904,12 @@ with tab_c:
             key="download_results"
         )
 
-        st.warning(
-            "Streamlit session data is temporary. "
-            "Download the CSV at the end of each "
-            "testing session and keep it as part of "
-            "the research evidence. Durable automatic "
-            "storage can be added to Google Drive once "
-            "the Drive write path is deliberately "
-            "configured."
+        st.info(
+            "The primary research record is the cumulative "
+            "research_data/results.csv file on the GitHub "
+            "research-data branch. Each chatbot run appends "
+            "a new timestamped row. The download button is "
+            "kept only for local backup/export."
         )
 
     with st.expander(
