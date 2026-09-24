@@ -1,12 +1,7 @@
-import io
-
 import streamlit as st
 
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-
-from pypdf import PdfReader
-from docx import Document
 
 
 DRIVE_SCOPE = [
@@ -46,10 +41,14 @@ def list_folder_files():
     ]
 
     result = drive_service.files().list(
-        q=f"'{folder_id}' in parents and trashed = false",
-        fields="files(id, name, mimeType)"
+        q=(
+            f"'{folder_id}' in parents "
+            "and trashed = false "
+            "and mimeType != 'application/vnd.google-apps.folder'"
+        ),
+        fields="files(id, name, mimeType)",
+        orderBy="name",
+        pageSize=100
     ).execute()
 
     return result.get("files", [])
-
-
