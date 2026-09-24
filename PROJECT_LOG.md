@@ -173,3 +173,20 @@ The successful Cohere retest closes this incremental build cycle with both final
 - Research results are currently stored in Streamlit session state while the app is running. Because Streamlit session state is not durable research storage, the interface explicitly requires the CSV to be downloaded at the end of each testing session. Durable automatic storage in the research Google Drive folder can be added later once a deliberate write-access design is approved.
 - `pandas` was added as an explicit project dependency for CSV handling and descriptive result summaries.
 - Relevant commits include `418f230` (research results helpers), `aa11c7f` (pandas dependency) and `10558b2` (automatic run capture and research metrics dashboard).
+
+
+## 24 September 2026 - Cumulative GitHub results dataset
+
+- The research-results workflow was refined so that `research_data/results.csv` is the single cumulative dataset used by the application.
+- The manual CSV upload workflow was removed from the `TESTS and METRICS` tab.
+- A dedicated GitHub branch named `research-data` was created for the cumulative results file. This prevents every recorded chatbot response from changing the deployed `main` branch and triggering unnecessary Streamlit redeployments during repeated testing.
+- The dashboard now reads `research_data/results.csv` directly from the `research-data` branch using the GitHub Contents API.
+- Every chatbot run appends one new row to the cumulative CSV. The row includes a unique run ID, UK timestamp, chatbot/provider/model, exact question, observed latency, full raw response text and any error information.
+- Normal result capture is append-only: previous raw responses and timestamps are not replaced when new runs are recorded.
+- Manual evaluation later updates only the scoring/interpretation fields for the matching `run_id`: correctness, relevance, faithfulness, calculated total quality, consistency, qualitative notes and scorer identity.
+- Sequential run IDs continue from the highest existing `RUN-xxxx` identifier in the cumulative GitHub dataset.
+- The results dashboard provides a refresh control that reloads the canonical dataset directly from GitHub and no longer requires the user to upload a file.
+- A local CSV download remains available only as a backup/export mechanism; it is not the primary source of truth.
+- The deployed Streamlit application requires a `GITHUB_RESULTS_TOKEN` secret to write to the cumulative dataset. This token should be a fine-grained GitHub token restricted to this repository with Contents read/write permission and should never be committed to the repository.
+- The `research-data` branch is intentionally separate from `main` so repeated experimental data commits do not repeatedly redeploy the application.
+- Relevant commits include `7e15f5e` (canonical results file), `6735b9c` (automatic repository loading), `800a7ba` (persistent cumulative GitHub storage), `aad9a84` (persistence failure warning), `42f1f8e` (GitHub HTTP dependency) and `415c9e3` (automatic dashboard loading with no upload control).
