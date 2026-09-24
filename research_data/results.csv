@@ -1,0 +1,1 @@
+run_id,test_id,domain,question,source_reference,chatbot,provider,model_id,repetition,test_order,timestamp_uk,latency_seconds,response_text,correctness_0_2,relevance_0_2,faithfulness_0_2,total_quality_0_6,consistency_0_2,error_status,error_message,retry_of_run_id,qualitative_notes,scored_by
