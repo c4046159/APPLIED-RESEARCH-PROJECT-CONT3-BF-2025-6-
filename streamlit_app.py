@@ -204,21 +204,6 @@ st.warning(
 st.divider()
 
 
-try:
-
-    research_documents, skipped_documents = (
-        get_research_documents()
-    )
-
-    document_connection_error = ""
-
-except Exception as error:
-
-    research_documents = []
-    skipped_documents = []
-    document_connection_error = str(error)
-
-
 tab_a, tab_b, tab_c = st.tabs(
     [
         "Chatbot A - Gemini",
@@ -259,6 +244,11 @@ with tab_a:
                 start_time = time.perf_counter()
 
                 try:
+
+                    (
+                        research_documents,
+                        skipped_documents,
+                    ) = get_research_documents()
 
                     if not research_documents:
                         raise ValueError(
@@ -394,6 +384,11 @@ with tab_b:
                 start_time = time.perf_counter()
 
                 try:
+
+                    (
+                        research_documents,
+                        skipped_documents,
+                    ) = get_research_documents()
 
                     if not research_documents:
                         raise ValueError(
@@ -979,33 +974,46 @@ with tab_c:
         "Google Drive document connection status"
     ):
 
-        if document_connection_error:
+        st.caption(
+            "Drive files are loaded only when needed "
+            "so they do not delay the main interface."
+        )
 
-            st.error(
-                "Google Drive connection could not "
-                "be completed: "
-                + document_connection_error
-            )
+        if st.button(
+            "Check Google Drive documents",
+            key="check_drive_documents"
+        ):
 
-        else:
+            try:
 
-            files = list_folder_files()
+                (
+                    research_documents,
+                    skipped_documents,
+                ) = get_research_documents()
 
-            st.success(
-                f"Connected to Google Drive. "
-                f"{len(research_documents)} readable "
-                f"document(s) loaded from "
-                f"{len(files)} file(s)."
-            )
-
-            for document in research_documents:
-                st.write(
-                    f"- {document['name']}"
+                st.success(
+                    f"{len(research_documents)} readable "
+                    "document(s) loaded."
                 )
 
-            if skipped_documents:
-                st.caption(
-                    "Skipped unsupported or unreadable "
-                    "files: "
-                    + ", ".join(skipped_documents)
+                for document in research_documents:
+                    st.write(
+                        f"- {document['name']}"
+                    )
+
+                if skipped_documents:
+                    st.caption(
+                        "Skipped unsupported or unreadable "
+                        "files: "
+                        + ", ".join(
+                            skipped_documents
+                        )
+                    )
+
+            except Exception as error:
+
+                st.error(
+                    "Google Drive connection could not "
+                    "be completed: "
+                    + str(error)
                 )
