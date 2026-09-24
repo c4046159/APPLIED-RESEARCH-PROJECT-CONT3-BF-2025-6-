@@ -92,12 +92,10 @@ The final prototype uses one retrieval method for both chatbot systems. This is 
 
 The current fixed retrieval configuration is:
 
-- Supported document formats: PDF, DOCX, TXT, Markdown and native Google Docs.
+- Supported document format: PDF only.
 - Google Drive access: service account with read-only Drive scope.
-- Google Docs are exported as plain text before processing.
 - PDF text is extracted with `pypdf`.
-- DOCX text is extracted with `python-docx`.
-- TXT/Markdown content is decoded as UTF-8 text.
+- Word documents, Google Docs, TXT, Markdown and other formats are excluded from the formal corpus.
 - Each document is divided into fixed chunks of 180 words.
 - Consecutive chunks overlap by 30 words.
 - Query and chunk text are reduced to lowercase alphanumeric terms with a small set of common stop words removed.
