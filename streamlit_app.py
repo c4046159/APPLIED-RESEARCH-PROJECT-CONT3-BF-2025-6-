@@ -12,6 +12,13 @@ st.set_page_config(
 
 from google_drive import list_folder_files
 
+files = list_folder_files()
+
+st.write("Documents available to the Chatbots:")
+
+for file in files:
+    st.write(file["name"])
+
 st.markdown(
     """
     <style>
