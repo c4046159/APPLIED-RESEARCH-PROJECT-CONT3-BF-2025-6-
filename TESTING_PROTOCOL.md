@@ -1,6 +1,7 @@
 # Formal Chatbot Testing Protocol
 
 Date established: 13 September 2026
+Final protocol update: 26 September 2026
 Module: APPLIED RESEARCH PROJECT (CONT3 BF-2025/6) - 55-709708-BF-20256
 
 ## 1. Purpose
@@ -18,9 +19,9 @@ The provider/model choices and the user-interface design are frozen before forma
 
 ## 2. Important distinction: pilot testing versus formal testing
 
-Current connectivity checks such as `What is a PLC?` are pilot/validation tests only.
+Connectivity checks such as `What is a PLC?` are pilot/validation tests only.
 
-Formal research data must not be collected until both chatbots receive the same retrieved context from the same approved engineering document corpus. This is necessary because the submitted research questions concern document-grounded answers and faithfulness to supplied documentation.
+The shared grounding path is now implemented: both chatbots receive context selected by the same application-side retrieval method. Formal data collection must use the frozen 20-question set below and a deliberately small, curated, research-safe PDF corpus. The earlier 883-PDF / 2.08 GB scalability test is separate implementation evidence and must not be mixed with the controlled formal dataset.
 
 ## 3. Formal benchmark size
 
@@ -65,6 +66,37 @@ For each of the 20 questions:
 
 The expected answer should focus on required facts rather than exact wording. This avoids unfairly penalising a correct answer simply because it is phrased differently.
 
+
+## 5A. Frozen formal question set - 26 September 2026
+
+The following wording is now frozen. Do not paraphrase questions between models or repetitions.
+
+| Test ID | Domain | Frozen question |
+|---|---|---|
+| PLC-01 | PLC | What is a programmable logic controller (PLC), and what is its primary role in an industrial control system? |
+| PLC-02 | PLC | Describe the typical PLC scan cycle and explain what happens during the input scan, program execution and output update stages. |
+| PLC-03 | PLC | What is the difference between digital and analogue input/output signals in a PLC-based control system? |
+| PLC-04 | PLC | What is the purpose of interlocks and permissives in PLC control logic? |
+| PLC-05 | PLC | What is the difference between a standard PLC control function and a safety-related control function? |
+| SCADA-01 | SCADA | What is a SCADA system, and what are its main functions in an industrial automation environment? |
+| SCADA-02 | SCADA | How does a SCADA system typically communicate with PLCs or remote terminal units? |
+| SCADA-03 | SCADA | What is the purpose of alarm management within a SCADA system? |
+| SCADA-04 | SCADA | What is an industrial process historian, and how is it used with SCADA or control systems? |
+| SCADA-05 | SCADA | What is the difference between an HMI and a SCADA system? |
+| IA-01 | Industrial Automation | What is the purpose of closed-loop control in an industrial automation system? |
+| IA-02 | Industrial Automation | Explain the difference between open-loop and closed-loop control. |
+| IA-03 | Industrial Automation | What is the purpose of a variable frequency drive (VFD) in an industrial automation system? |
+| IA-04 | Industrial Automation | What role do industrial communication networks play in an automated control system? |
+| IA-05 | Industrial Automation | What are Factory Acceptance Testing (FAT) and Site Acceptance Testing (SAT), and why are they carried out? |
+| OT-01 | Operational Technology | What is Operational Technology (OT), and how does it differ from traditional Information Technology (IT)? |
+| OT-02 | Operational Technology | Why is network segmentation important in an industrial or OT environment? |
+| OT-03 | Operational Technology | What is the principle of least privilege, and why is it important for access to industrial control systems? |
+| OT-04 | Operational Technology | Why can software patching and system updates be more difficult in operational technology environments than in conventional IT environments? |
+| OT-05 | Operational Technology | Why are backups and recovery procedures important for industrial control and OT systems? |
+
+For every question, the final question-bank file must also contain the source document/page or section, required answer elements and reference passage before scoring begins. If a question is not answerable from the final curated corpus, either correct the corpus/question **before the formal run** or explicitly designate the item as a deliberate no-answer/refusal test. Do not change an item after seeing formal model outputs.
+
+
 ## 6. Freeze the experimental conditions
 
 Immediately before formal testing, record:
@@ -93,7 +125,7 @@ The final prototype uses one retrieval method for both chatbot systems. This is 
 The current fixed retrieval configuration is:
 
 - Supported document format: PDF only.
-- Google Drive access: service account with read-only Drive scope.
+- Google Drive access: service account using read access for the PDF corpus plus `drive.file` permission for timestamped CSV files created by the application.
 - PDF text is extracted with `pypdf`.
 - Word documents, Google Docs, TXT, Markdown and other formats are excluded from the formal corpus.
 - Each document is divided into fixed chunks of 180 words.
@@ -272,3 +304,29 @@ The experiment is complete when:
 ## 16. Research integrity
 
 The testing procedure is designed to preserve the submitted proposal's principles of controlled prompts, documented configurations and repeatable procedures. The same evidence must be retained even when it shows poor performance, errors or results contrary to expectations.
+
+## 17. Final pre-run status - 26 September 2026
+
+The software implementation needed for formal testing is complete enough to proceed once the curated PDF corpus and source-grounded answer keys are frozen.
+
+Current fixed implementation:
+
+- Gemini model ID: `gemini-3.5-flash-lite`.
+- Cohere model ID: `command-a-plus-05-2026`.
+- PDF-only Drive corpus.
+- 180-word chunks.
+- 30-word overlap.
+- Top four deterministic keyword-overlap matches.
+- Same retrieved context and grounded instruction pattern for both models.
+- Model/API latency measured after shared retrieval.
+- Session-State result accumulation.
+- Timestamped CSV save to the same Google Drive folder plus local CSV download.
+- Manual 0-2 correctness/relevance/faithfulness scoring, total quality 0-6, consistency 0-2.
+- 20 frozen questions x 2 models x 3 repetitions = 120 planned formal observations.
+
+The 883-PDF / 2.08 GB corpus-scale experiment is recorded as a scalability limitation, not as the formal benchmark condition.
+
+Pilot observations suggesting stronger Cohere answer quality but slower responses remain provisional and must not influence scoring.
+
+As of this protocol update, formal numerical comparison results have not been inserted into the research paper. They must come only from the completed preserved dataset.
+
