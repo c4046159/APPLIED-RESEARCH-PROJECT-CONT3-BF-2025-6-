@@ -71,3 +71,21 @@ The visual approach is deliberately restrained so that the interface remains a r
 ## Attribution shown in the application
 
 The prototype states that its visual theme is inspired by Sheffield Hallam University's online website and publicly available brand guidance and that it remains an independent student research prototype rather than an official University digital service.
+
+
+## Final interface status - 26 September 2026
+
+The visual design remains frozen. Later changes were functional research additions rather than aesthetic redesigns.
+
+The final top-level interface contains three tabs:
+
+- **Chatbot A** - Google Gemini 3.5 Flash-Lite.
+- **Chatbot B** - Cohere Command A+.
+- **TESTS and METRICS** - result capture, latency summaries, manual scoring, CSV export/Drive save and Google Drive corpus checks.
+
+Both chatbot conditions continue to use the same visual structure and interaction treatment. The addition of the TESTS and METRICS tab does not change the comparative presentation of A and B; it exposes the research instrumentation required by the final empirical study.
+
+The final application also displays retrieved document-source filenames beneath grounded answers. This is treated as research evidence/provenance rather than a visual redesign.
+
+No further cosmetic changes are planned before submission. Any remaining interface change should be limited to a defect that prevents valid testing or evidence capture.
+
