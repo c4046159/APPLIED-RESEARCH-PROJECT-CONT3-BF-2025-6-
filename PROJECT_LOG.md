@@ -1,5 +1,86 @@
 # Applied Research Project - Development Log
 
+## Canonical final project status - 26 September 2026
+
+This section records the current authoritative state of the project. Earlier entries are retained as chronological development evidence and may describe superseded designs, temporary failures or planned work that has since been completed or abandoned.
+
+### Final research definition
+
+- Working title: **Empirical Evaluation of State-of-the-Art AI Chatbots for Domain-Specific Engineering Question Answering**.
+- The original project emphasis was the design and implementation of an engineering-document chatbot. Module instructor/supervisor feedback required the work to be reframed as an empirical comparison rather than a build-only project.
+- The Streamlit application is therefore both the technical artefact and the controlled experimental instrument.
+- The final comparison contains two systems:
+  - Chatbot A: Google Gemini 3.5 Flash-Lite, model ID `gemini-3.5-flash-lite`.
+  - Chatbot B: Cohere Command A+, model ID `command-a-plus-05-2026`.
+- Earlier Groq, OpenRouter and Mistral attempts are retained only as development/feasibility evidence.
+- Chatbot C and the earlier three-system concept are not part of the final study.
+
+### Final document-grounding implementation
+
+- Google Drive is the research document store.
+- The formal ingestion path is **PDF only**.
+- PDF text extraction uses `pypdf`.
+- The app lists Drive PDFs using pagination with `nextPageToken`, so the earlier 100-file listing ceiling has been removed.
+- Documents are split into fixed 180-word chunks with 30-word overlap.
+- Retrieval uses deterministic keyword overlap after basic lower-case tokenisation and stop-word removal.
+- The top four matching chunks are selected.
+- Both models receive context created by the **same loader, chunking logic, retrieval rule and grounded prompt**.
+- The prompt instructs both models to use only supplied context and to state when the information is not available in the provided documentation.
+- Source filenames used for each answer are recorded with the result.
+- Document loading is lazy/cached so Google Drive I/O does not block initial rendering of the Streamlit tabs.
+- Model/API latency is measured after shared retrieval and prompt construction so the first-tested model is not penalised for Drive loading.
+
+### Results capture and evidence storage
+
+- Results accumulate in Streamlit Session State during an active session.
+- Each run records raw response text, provider/model, exact question, timestamp, model/API latency, source reference and error information.
+- Manual scoring uses:
+  - Correctness: 0-2.
+  - Relevance: 0-2.
+  - Faithfulness: 0-2.
+  - Total quality: 0-6.
+  - Consistency across three repetitions: 0-2.
+- The `TESTS and METRICS` tab provides run counts, latency comparison, manual scoring, summary charts and the recorded-results table.
+- The current session can be downloaded locally as CSV.
+- The app can also save one new timestamped CSV to Google Drive using the existing `GOOGLE_DRIVE_FOLDER_ID`.
+- The same shared Drive folder therefore contains both PDF source material and timestamped CSV evidence; PDF MIME filtering prevents result CSV files from entering the chatbot corpus.
+- The earlier GitHub-as-database design was abandoned and is not part of the final architecture.
+
+### Scalability evidence
+
+- A reduced PDF-only repository still contained **883 PDFs totalling approximately 2.08 GB**.
+- At that scale the lightweight Streamlit + Drive download + PDF extraction + full-corpus keyword retrieval design became effectively unusable for interactive work.
+- This is retained as a major implementation/scalability finding rather than hidden as a failed test.
+- The finding applies to this prototype architecture and does not establish that all RAG/document-grounded systems are inherently inferior.
+- The formal model-comparison experiment should use a much smaller, curated and frozen PDF corpus directly supporting the benchmark questions.
+
+### Pilot model observation
+
+- Pilot use suggested that Cohere Command A+ often produced more accurate/useful answers but with noticeably higher response latency.
+- Gemini 3.5 Flash-Lite appeared faster in those pilot comparisons.
+- This remains **provisional pilot evidence only** until the formal 120-response benchmark is completed and scored.
+
+### Frozen formal benchmark
+
+The final benchmark is fixed at 20 questions:
+
+- 5 PLC questions.
+- 5 SCADA questions.
+- 5 Industrial Automation questions.
+- 5 Operational Technology questions.
+- 3 independent repetitions per question per model.
+- Planned total: **20 x 2 x 3 = 120 responses**.
+
+The exact frozen question wording is maintained in `TESTING_PROTOCOL.md`.
+
+### Submission/document status
+
+- The final supporting document pack was consolidated on 26 September 2026 against the official 55-709708 IEEE template and assessment brief.
+- The pack includes the research proposal/design plan, literature review, methodology/testing plan, development journal, ethics/risk/validity/AITS material, IEEE paper draft/current-evidence version, master IEEE references and 4-5 minute video script/checklist.
+- The main paper deliberately does not invent formal comparative statistics that have not yet been produced.
+- As of this update, the remaining critical activity is to execute, preserve, score and analyse the formal 120-response dataset, insert the resulting numerical findings into the final paper/video, and perform final submission checks.
+- Internal completion target: **Sunday night, 27 September 2026**, including the recorded video.
+
 ## 12 September 2026 - Initial cloud prototype
 
 - Created a simple Streamlit application and deployed it from GitHub using Streamlit Community Cloud.
