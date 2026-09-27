@@ -21,7 +21,7 @@ The provider/model choices and the user-interface design are frozen before forma
 
 Connectivity checks such as `What is a PLC?` are pilot/validation tests only.
 
-The shared grounding path is now implemented: both chatbots receive context selected by the same application-side retrieval method. Formal data collection must use the frozen 20-question set below and a deliberately small, curated, research-safe PDF corpus. The earlier 883-PDF / 2.08 GB scalability test is separate implementation evidence and must not be mixed with the controlled formal dataset.
+The shared grounding path is now implemented: both chatbots receive context selected by the same application-side retrieval method. Formal data collection must use the frozen 20-question set below and a deliberately small, curated, research-safe PDF corpus. The earlier 883-PDF / 2.08 GB scalability test is separate implementation evidence and must not be mixed with the controlled formal dataset. The current shared repository has since been reduced to **706 PDFs / approximately 191 MB**, but this working repository is still not automatically equivalent to the final curated formal corpus.
 
 ## 3. Formal benchmark size
 
@@ -324,7 +324,7 @@ Current fixed implementation:
 - Manual 0-2 correctness/relevance/faithfulness scoring, total quality 0-6, consistency 0-2.
 - 20 frozen questions x 2 models x 3 repetitions = 120 planned formal observations.
 
-The 883-PDF / 2.08 GB corpus-scale experiment is recorded as a scalability limitation, not as the formal benchmark condition.
+The 883-PDF / 2.08 GB corpus-scale experiment is recorded as a historical scalability limitation, not as the formal benchmark condition. As of 27 September 2026, the shared repository has been reduced to **706 PDFs totalling approximately 191 MB**. The formal benchmark should still use only the frozen research-safe subset needed to support the 20 questions.
 
 Pilot observations suggesting stronger Cohere answer quality but slower responses remain provisional and must not influence scoring.
 
