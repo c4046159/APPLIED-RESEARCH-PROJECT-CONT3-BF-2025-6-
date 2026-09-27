@@ -48,11 +48,12 @@ This section records the current authoritative state of the project. Earlier ent
 
 ### Scalability evidence
 
-- A reduced PDF-only repository still contained **883 PDFs totalling approximately 2.08 GB**.
-- At that scale the lightweight Streamlit + Drive download + PDF extraction + full-corpus keyword retrieval design became effectively unusable for interactive work.
-- This is retained as a major implementation/scalability finding rather than hidden as a failed test.
+- Historical stress testing used **883 PDFs totalling approximately 2.08 GB**; at that scale the lightweight Streamlit + Drive download + PDF extraction + full-corpus keyword retrieval design became effectively unusable for interactive work.
+- The shared PDF repository has since been reduced to **706 PDFs totalling approximately 191 MB**.
+- This substantial reduction lowers the I/O and parsing burden, but the corpus remains large for the current lightweight retrieval architecture and should not be treated as evidence that the earlier scalability limitation has been solved.
+- The historical 883-PDF / 2.08 GB result is retained as a major implementation/scalability finding rather than hidden as a failed test.
 - The finding applies to this prototype architecture and does not establish that all RAG/document-grounded systems are inherently inferior.
-- The formal model-comparison experiment should use a much smaller, curated and frozen PDF corpus directly supporting the benchmark questions.
+- The formal model-comparison experiment should still use a smaller, curated and frozen PDF corpus directly supporting the benchmark questions.
 
 ### Pilot model observation
 
@@ -516,3 +517,13 @@ Cross-file checks confirm that all imported project helpers exist, all required 
 The remaining known limitation is architectural rather than a code defect: attempting to load and process the 883-PDF / approximately 2.08 GB corpus remains impractical. Formal testing must use the deliberately curated small PDF corpus defined by the research method.
 
 Relevant corrective commits: `b75c8a6`, `8ba18c5` and `9eeefaa`.
+
+
+## 27 September 2026 - Shared PDF repository reduced to 706 files / approximately 191 MB
+
+- The shared Google Drive PDF repository was reduced from the earlier 883-file / approximately 2.08 GB stress-test state to **706 PDF files totalling approximately 191 MB**.
+- This is the current repository size as of 27 September 2026.
+- The reduction is significant in storage terms and should reduce download, PDF parsing and memory pressure compared with the earlier 2.08 GB corpus.
+- The change does not invalidate the previous scalability finding. The 883-file / 2.08 GB test remains historical evidence that the current architecture does not scale well to a large heterogeneous document repository.
+- The current 706-file / 191 MB repository is still considerably larger than the deliberately small curated corpus recommended for the controlled 20-question formal experiment.
+- For reporting purposes, the two states must be distinguished clearly: **883 PDFs / 2.08 GB = historical scalability stress test; 706 PDFs / 191 MB = current reduced shared repository**.
