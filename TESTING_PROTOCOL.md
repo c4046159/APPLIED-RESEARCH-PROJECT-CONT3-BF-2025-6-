@@ -21,7 +21,7 @@ The provider/model choices and the user-interface design are frozen before forma
 
 Connectivity checks such as `What is a PLC?` are pilot/validation tests only.
 
-The shared grounding path is now implemented: both chatbots receive context selected by the same application-side retrieval method. Formal data collection must use the frozen 20-question set below and a deliberately small, curated, research-safe PDF corpus. The earlier 883-PDF / 2.08 GB scalability test is separate implementation evidence and must not be mixed with the controlled formal dataset. The current shared repository has since been reduced to **706 PDFs / approximately 191 MB**, but this working repository is still not automatically equivalent to the final curated formal corpus.
+The shared grounding path is now implemented: both chatbots receive context selected by the same application-side retrieval method. Formal data collection must use the frozen 20-question set below and a deliberately small, curated, research-safe PDF corpus. The earlier 883-PDF / 2.08 GB scalability test is separate implementation evidence and must not be mixed with the controlled formal dataset. The current shared repository has since been reduced to 706 PDFs / approximately 191 MB, but this working repository is still not automatically equivalent to the final curated formal corpus.
 
 ## 3. Formal benchmark size
 
@@ -71,28 +71,26 @@ The expected answer should focus on required facts rather than exact wording. Th
 
 The following wording is now frozen. Do not paraphrase questions between models or repetitions.
 
-| Test ID | Domain | Frozen question |
-|---|---|---|
-| PLC-01 | PLC | What is a programmable logic controller (PLC), and what is its primary role in an industrial control system? |
-| PLC-02 | PLC | Describe the typical PLC scan cycle and explain what happens during the input scan, program execution and output update stages. |
-| PLC-03 | PLC | What is the difference between digital and analogue input/output signals in a PLC-based control system? |
-| PLC-04 | PLC | What is the purpose of interlocks and permissives in PLC control logic? |
-| PLC-05 | PLC | What is the difference between a standard PLC control function and a safety-related control function? |
-| SCADA-01 | SCADA | What is a SCADA system, and what are its main functions in an industrial automation environment? |
-| SCADA-02 | SCADA | How does a SCADA system typically communicate with PLCs or remote terminal units? |
-| SCADA-03 | SCADA | What is the purpose of alarm management within a SCADA system? |
-| SCADA-04 | SCADA | What is an industrial process historian, and how is it used with SCADA or control systems? |
-| SCADA-05 | SCADA | What is the difference between an HMI and a SCADA system? |
-| IA-01 | Industrial Automation | What is the purpose of closed-loop control in an industrial automation system? |
-| IA-02 | Industrial Automation | Explain the difference between open-loop and closed-loop control. |
-| IA-03 | Industrial Automation | What is the purpose of a variable frequency drive (VFD) in an industrial automation system? |
-| IA-04 | Industrial Automation | What role do industrial communication networks play in an automated control system? |
-| IA-05 | Industrial Automation | What are Factory Acceptance Testing (FAT) and Site Acceptance Testing (SAT), and why are they carried out? |
-| OT-01 | Operational Technology | What is Operational Technology (OT), and how does it differ from traditional Information Technology (IT)? |
-| OT-02 | Operational Technology | Why is network segmentation important in an industrial or OT environment? |
-| OT-03 | Operational Technology | What is the principle of least privilege, and why is it important for access to industrial control systems? |
-| OT-04 | Operational Technology | Why can software patching and system updates be more difficult in operational technology environments than in conventional IT environments? |
-| OT-05 | Operational Technology | Why are backups and recovery procedures important for industrial control and OT systems? |
+01. What is a programmable logic controller (PLC), and what is its primary role in an industrial control system?
+2. Describe the typical PLC scan cycle and explain what happens during the input scan, program execution and output update stages.
+3. What is the difference between digital and analogue input/output signals in a PLC-based control system?
+4. What is the purpose of interlocks and permissives in PLC control logic?
+5. What is the difference between a standard PLC control function and a safety-related control function?
+6. What is a SCADA system, and what are its main functions in an industrial automation environment?
+7. How does a SCADA system typically communicate with PLCs or remote terminal units?
+8. What is the purpose of alarm management within a SCADA system?
+9. What is an industrial process historian, and how is it used with SCADA or control systems?
+10. What is the difference between an HMI and a SCADA system?
+11. What is the purpose of closed-loop control in an industrial automation system?
+12. Explain the difference between open-loop and closed-loop control.
+13. What is the purpose of a variable frequency drive (VFD) in an industrial automation system?
+14. What role do industrial communication networks play in an automated control system?
+15. What are Factory Acceptance Testing (FAT) and Site Acceptance Testing (SAT), and why are they carried out?
+16. What is Operational Technology (OT), and how does it differ from traditional Information Technology (IT)?
+17. Why is network segmentation important in an industrial or OT environment?
+18. What is the principle of least privilege, and why is it important for access to industrial control systems?
+19. Why can software patching and system updates be more difficult in operational technology environments than in conventional IT environments?
+20. Why are backups and recovery procedures important for industrial control and OT systems? |
 
 For every question, the final question-bank file must also contain the source document/page or section, required answer elements and reference passage before scoring begins. If a question is not answerable from the final curated corpus, either correct the corpus/question **before the formal run** or explicitly designate the item as a deliberate no-answer/refusal test. Do not change an item after seeing formal model outputs.
 
@@ -324,9 +322,4 @@ Current fixed implementation:
 - Manual 0-2 correctness/relevance/faithfulness scoring, total quality 0-6, consistency 0-2.
 - 20 frozen questions x 2 models x 3 repetitions = 120 planned formal observations.
 
-The 883-PDF / 2.08 GB corpus-scale experiment is recorded as a historical scalability limitation, not as the formal benchmark condition. As of 27 September 2026, the shared repository has been reduced to **706 PDFs totalling approximately 191 MB**. The formal benchmark should still use only the frozen research-safe subset needed to support the 20 questions.
-
-Pilot observations suggesting stronger Cohere answer quality but slower responses remain provisional and must not influence scoring.
-
-As of this protocol update, formal numerical comparison results have not been inserted into the research paper. They must come only from the completed preserved dataset.
-
+The 883-PDF / 2.08 GB corpus-scale experiment is recorded as a historical scalability limitation, not as the formal benchmark condition. As of 27 September 2026, the shared repository has been reduced to 706 PDFs totalling approximately 191 MB. The formal benchmark should still use only the frozen research-safe subset needed to support the 20 questions.
