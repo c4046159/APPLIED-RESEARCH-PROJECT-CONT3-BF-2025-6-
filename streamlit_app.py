@@ -9,7 +9,6 @@ import streamlit as st
 from google import genai
 
 from google_drive import (
-    list_folder_files,
     load_research_documents,
     upload_results_csv,
 )
@@ -17,6 +16,7 @@ from document_retrieval import (
     build_grounded_prompt,
     retrieve_relevant_chunks,
     source_names,
+    source_references,
 )
 from research_results import (
     add_result,
@@ -48,13 +48,103 @@ def get_research_documents():
     return load_research_documents()
 
 
-def record_pilot_result(
+FROZEN_TESTS = {
+    "What is a programmable logic controller (PLC), and what is its primary role in an industrial control system?": ("PLC-01", "PLC"),
+    "Describe the typical PLC scan cycle and explain what happens during the input scan, program execution and output update stages.": ("PLC-02", "PLC"),
+    "What is the difference between digital and analogue input/output signals in a PLC-based control system?": ("PLC-03", "PLC"),
+    "What is the purpose of interlocks and permissives in PLC control logic?": ("PLC-04", "PLC"),
+    "What is the difference between a standard PLC control function and a safety-related control function?": ("PLC-05", "PLC"),
+    "What is a SCADA system, and what are its main functions in an industrial automation environment?": ("SCADA-01", "SCADA"),
+    "How does a SCADA system typically communicate with PLCs or remote terminal units?": ("SCADA-02", "SCADA"),
+    "What is the purpose of alarm management within a SCADA system?": ("SCADA-03", "SCADA"),
+    "What is an industrial process historian, and how is it used with SCADA or control systems?": ("SCADA-04", "SCADA"),
+    "What is the difference between an HMI and a SCADA system?": ("SCADA-05", "SCADA"),
+    "What is the purpose of closed-loop control in an industrial automation system?": ("IA-01", "Industrial Automation"),
+    "Explain the difference between open-loop and closed-loop control.": ("IA-02", "Industrial Automation"),
+    "What is the purpose of a variable frequency drive (VFD) in an industrial automation system?": ("IA-03", "Industrial Automation"),
+    "What role do industrial communication networks play in an automated control system?": ("IA-04", "Industrial Automation"),
+    "What are Factory Acceptance Testing (FAT) and Site Acceptance Testing (SAT), and why are they carried out?": ("IA-05", "Industrial Automation"),
+    "What is Operational Technology (OT), and how does it differ from traditional Information Technology (IT)?": ("OT-01", "Operational Technology"),
+    "Why is network segmentation important in an industrial or OT environment?": ("OT-02", "Operational Technology"),
+    "What is the principle of least privilege, and why is it important for access to industrial control systems?": ("OT-03", "Operational Technology"),
+    "Why can software patching and system updates be more difficult in operational technology environments than in conventional IT environments?": ("OT-04", "Operational Technology"),
+    "Why are backups and recovery procedures important for industrial control and OT systems?": ("OT-05", "Operational Technology"),
+}
+
+
+def normalise_question_text(text):
+
+    return " ".join(
+        text.strip().split()
+    )
+
+
+FROZEN_TEST_LOOKUP = {
+    normalise_question_text(question): metadata
+    for question, metadata in FROZEN_TESTS.items()
+}
+
+
+def get_run_metadata(
+    question,
+    chatbot
+):
+
+    metadata = FROZEN_TEST_LOOKUP.get(
+        normalise_question_text(question)
+    )
+
+    if metadata is None:
+        return {
+            "test_id": "PILOT",
+            "domain": "Pilot",
+            "repetition": 1,
+            "test_order": "",
+            "qualitative_notes": (
+                "Pilot/manual run - not part of "
+                "the formal research dataset."
+            ),
+        }
+
+    test_id, domain = metadata
+    current_results = get_results_dataframe()
+
+    same_test = current_results[
+        current_results["test_id"] == test_id
+    ]
+
+    same_model = same_test[
+        same_test["chatbot"] == chatbot
+    ]
+
+    repetition = len(same_model) + 1
+    test_order = len(same_test) + 1
+
+    if repetition <= 3:
+        note = "Formal benchmark run."
+    else:
+        note = (
+            "Extra formal attempt beyond the "
+            "planned three repetitions."
+        )
+
+    return {
+        "test_id": test_id,
+        "domain": domain,
+        "repetition": repetition,
+        "test_order": test_order,
+        "qualitative_notes": note,
+    }
+
+
+def record_result(
     run_id,
     chatbot,
     provider,
     model_id,
     question,
     latency_seconds,
+    metadata,
     source_reference="",
     response_text="",
     error_status="OK",
@@ -64,15 +154,15 @@ def record_pilot_result(
     add_result(
         {
             "run_id": run_id,
-            "test_id": "PILOT",
-            "domain": "Pilot",
+            "test_id": metadata["test_id"],
+            "domain": metadata["domain"],
             "question": question,
             "source_reference": source_reference,
             "chatbot": chatbot,
             "provider": provider,
             "model_id": model_id,
-            "repetition": 1,
-            "test_order": "",
+            "repetition": metadata["repetition"],
+            "test_order": metadata["test_order"],
             "timestamp_uk": uk_timestamp(),
             "latency_seconds": latency_seconds,
             "response_text": response_text,
@@ -85,7 +175,7 @@ def record_pilot_result(
             "error_message": error_message,
             "retry_of_run_id": "",
             "qualitative_notes": (
-                "Pilot/manual run - not part of the formal research dataset."
+                metadata["qualitative_notes"]
             ),
             "scored_by": "",
         }
@@ -160,7 +250,7 @@ st.title(
 
 st.markdown(
     """
-    <div class="Sheffield Hallam University theme disclaimer:">
+    <div class="shu-theme-note">
         The visual theme of this web application was inspired by
         Sheffield Hallam University's online websites and other
         media and materials.
@@ -242,6 +332,10 @@ with tab_a:
             else:
 
                 run_id = next_run_id()
+                metadata_a = get_run_metadata(
+                    question_a,
+                    "Chatbot A"
+                )
                 start_time = None
 
                 try:
@@ -273,6 +367,10 @@ with tab_a:
                         source_names(chunks_a)
                     )
 
+                    source_refs_a = "; ".join(
+                        source_references(chunks_a)
+                    )
+
                     gemini_key = st.secrets[
                         "GEMINI_API_KEY"
                     ]
@@ -301,14 +399,15 @@ with tab_a:
 
                     answer = response.text
 
-                    record_pilot_result(
+                    record_result(
                         run_id=run_id,
                         chatbot="Chatbot A",
                         provider="Google",
                         model_id="gemini-3.5-flash-lite",
                         question=question_a,
                         latency_seconds=latency,
-                        source_reference=sources_a,
+                        metadata=metadata_a,
+                        source_reference=source_refs_a,
                         response_text=answer,
                     )
 
@@ -345,13 +444,14 @@ with tab_a:
                     else:
                         latency = 0.0
 
-                    record_pilot_result(
+                    record_result(
                         run_id=run_id,
                         chatbot="Chatbot A",
                         provider="Google",
                         model_id="gemini-3.5-flash-lite",
                         question=question_a,
                         latency_seconds=latency,
+                        metadata=metadata_a,
                         error_status="ERROR",
                         error_message=str(error),
                     )
@@ -390,6 +490,10 @@ with tab_b:
             else:
 
                 run_id = next_run_id()
+                metadata_b = get_run_metadata(
+                    question_b,
+                    "Chatbot B"
+                )
                 start_time = None
 
                 try:
@@ -419,6 +523,10 @@ with tab_b:
 
                     sources_b = ", ".join(
                         source_names(chunks_b)
+                    )
+
+                    source_refs_b = "; ".join(
+                        source_references(chunks_b)
                     )
 
                     cohere_key = st.secrets[
@@ -461,7 +569,7 @@ with tab_b:
 
                     if answer == "":
 
-                        record_pilot_result(
+                        record_result(
                             run_id=run_id,
                             chatbot="Chatbot B",
                             provider="Cohere",
@@ -470,6 +578,7 @@ with tab_b:
                             ),
                             question=question_b,
                             latency_seconds=latency,
+                            metadata=metadata_b,
                             error_status="ERROR",
                             error_message=(
                                 "No text response "
@@ -483,7 +592,7 @@ with tab_b:
 
                     else:
 
-                        record_pilot_result(
+                        record_result(
                             run_id=run_id,
                             chatbot="Chatbot B",
                             provider="Cohere",
@@ -492,7 +601,8 @@ with tab_b:
                             ),
                             question=question_b,
                             latency_seconds=latency,
-                            source_reference=sources_b,
+                            metadata=metadata_b,
+                            source_reference=source_refs_b,
                             response_text=answer,
                         )
 
@@ -531,7 +641,7 @@ with tab_b:
                     else:
                         latency = 0.0
 
-                    record_pilot_result(
+                    record_result(
                         run_id=run_id,
                         chatbot="Chatbot B",
                         provider="Cohere",
@@ -540,6 +650,7 @@ with tab_b:
                         ),
                         question=question_b,
                         latency_seconds=latency,
+                        metadata=metadata_b,
                         error_status="ERROR",
                         error_message=str(error),
                     )
@@ -558,14 +669,17 @@ with tab_c:
         "the two chatbots using the same fields defined in "
         "research_data/results_template.csv. The chatbots now use "
         "the same Google Drive document corpus and the same retrieval "
-        "method. Current manual runs remain marked PILOT until the "
-        "formal 20-question benchmark is populated and frozen."
+        "method. The 20-question benchmark is now frozen. Exact "
+        "matches to those questions are automatically recorded with "
+        "their formal test ID, domain, repetition and run order; "
+        "other questions remain marked PILOT."
     )
 
     st.caption(
         "Results are recorded in the current Streamlit session. "
         "Each chatbot run adds a new timestamped row. "
-        "Download the CSV at the end of the testing session."
+        "Save the session CSV to Google Drive and keep a local "
+        "download as backup."
     )
 
     results = get_results_dataframe()
