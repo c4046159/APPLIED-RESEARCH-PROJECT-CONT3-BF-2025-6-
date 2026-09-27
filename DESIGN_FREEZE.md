@@ -1,4 +1,4 @@
-# Design Freeze - Applied Research Project Prototype
+Design Freeze of the Applied Research Project Streamlit application  
 
 Date: 13 September 2026
 
