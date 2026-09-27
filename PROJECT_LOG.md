@@ -6,7 +6,7 @@ This section records the current authoritative state of the project. Earlier ent
 
 ### Final research definition
 
-- Working title: **Empirical Evaluation of State-of-the-Art AI Chatbots for Domain-Specific Engineering Question Answering**.
+- Working title: "Empirical Evaluation of 2 AI Chatbots for Domain-Specific Engineering Question Answering".
 - The original project emphasis was the design and implementation of an engineering-document chatbot. Module instructor/supervisor feedback required the work to be reframed as an empirical comparison rather than a build-only project.
 - The Streamlit application is therefore both the technical artefact and the controlled experimental instrument.
 - The final comparison contains two systems:
@@ -18,13 +18,13 @@ This section records the current authoritative state of the project. Earlier ent
 ### Final document-grounding implementation
 
 - Google Drive is the research document store.
-- The formal ingestion path is **PDF only**.
+- The formal ingestion path is PDF only.
 - PDF text extraction uses `pypdf`.
 - The app lists Drive PDFs using pagination with `nextPageToken`, so the earlier 100-file listing ceiling has been removed.
 - Documents are split into fixed 180-word chunks with 30-word overlap.
 - Retrieval uses deterministic keyword overlap after basic lower-case tokenisation and stop-word removal.
 - The top four matching chunks are selected.
-- Both models receive context created by the **same loader, chunking logic, retrieval rule and grounded prompt**.
+- Both models receive context created by the same loader, chunking logic, retrieval rule and grounded prompt.
 - The prompt instructs both models to use only supplied context and to state when the information is not available in the provided documentation.
 - Source filenames used for each answer are recorded with the result.
 - Document loading is lazy/cached so Google Drive I/O does not block initial rendering of the Streamlit tabs.
@@ -48,8 +48,8 @@ This section records the current authoritative state of the project. Earlier ent
 
 ### Scalability evidence
 
-- Historical stress testing used **883 PDFs totalling approximately 2.08 GB**; at that scale the lightweight Streamlit + Drive download + PDF extraction + full-corpus keyword retrieval design became effectively unusable for interactive work.
-- The shared PDF repository has since been reduced to **706 PDFs totalling approximately 191 MB**.
+- Historical stress testing used 883 PDFs totalling approximately 2.08 GB. At that scale, the lightweight Streamlit + Drive download + PDF extraction + full-corpus keyword retrieval design became effectively unusable for interactive work. The loading times exceeded the internal timeouts of the sublayers and related websites. 
+- The shared PDF repository has since been reduced to 706 PDFs totalling approximately 191 MB.
 - This substantial reduction lowers the I/O and parsing burden, but the corpus remains large for the current lightweight retrieval architecture and should not be treated as evidence that the earlier scalability limitation has been solved.
 - The historical 883-PDF / 2.08 GB result is retained as a major implementation/scalability finding rather than hidden as a failed test.
 - The finding applies to this prototype architecture and does not establish that all RAG/document-grounded systems are inherently inferior.
@@ -70,17 +70,9 @@ The final benchmark is fixed at 20 questions:
 - 5 Industrial Automation questions.
 - 5 Operational Technology questions.
 - 3 independent repetitions per question per model.
-- Planned total: **20 x 2 x 3 = 120 responses**.
+- Planned total: 20 x 2 x 3 = 120 responses.
 
 The exact frozen question wording is maintained in `TESTING_PROTOCOL.md`.
-
-### Submission/document status
-
-- The final supporting document pack was consolidated on 26 September 2026 against the official 55-709708 IEEE template and assessment brief.
-- The pack includes the research proposal/design plan, literature review, methodology/testing plan, development journal, ethics/risk/validity/AITS material, IEEE paper draft/current-evidence version, master IEEE references and 4-5 minute video script/checklist.
-- The main paper deliberately does not invent formal comparative statistics that have not yet been produced.
-- As of this update, the remaining critical activity is to execute, preserve, score and analyse the formal 120-response dataset, insert the resulting numerical findings into the final paper/video, and perform final submission checks.
-- Internal completion target: **Sunday night, 27 September 2026**, including the recorded video.
 
 ## 12 September 2026 - Initial cloud prototype
 
@@ -96,10 +88,6 @@ The exact frozen question wording is maintained in `TESTING_PROTOCOL.md`.
 The successful Gemini response confirmed the basic cloud path was working end-to-end: GitHub source code -> Streamlit Community Cloud -> external LLM API -> response displayed in the browser.
 
 ## 13 September 2026 - Incremental build: adding a second independent chatbot provider
-
-### Plan
-
-The incremental extension was to add a second independent LLM provider to the existing Streamlit prototype so that the same interface could later be used to compare different chatbot systems under controlled conditions. A successful outcome would be a second chatbot that accepted the same test prompt as Chatbot A and returned a valid response without requiring paid API access.
 
 ### Groq provider trial discontinued
 
