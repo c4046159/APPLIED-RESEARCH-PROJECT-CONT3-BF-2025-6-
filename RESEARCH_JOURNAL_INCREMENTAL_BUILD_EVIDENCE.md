@@ -16,21 +16,21 @@ The prototype was already deployed from GitHub through Streamlit Community Cloud
 
 Relevant commits include:
 
-- `cb6f05e` - Document Groq trial and free-provider decision.
-- `4219ba1` - Replace Groq dependency with requests for OpenRouter.
-- `a3eb6ac` - Replace Groq Chatbot B with free OpenRouter Nemotron model.
-- `4a2470f` - Use more reliable free OpenRouter model and improve error handling.
-- `651b2d7` - Document OpenRouter model availability issue and Chatbot B revision.
-- `7566a97` - Replace OpenRouter Chatbot B with Mistral free-mode API.
-- `af01d2d` - Use official Mistral Python SDK for Chatbot B.
-- `88217b4` - Document OpenRouter trial and switch Chatbot B to Mistral.
-- `f93ed33` - Document Mistral 429 result and incremental build evidence.
-- `703f0ea` - Replace Mistral dependency with Cohere for Chatbot B.
-- `11191c2` - Use Cohere Command A Plus for Chatbot B.
-- `3f45b8a` - Document two-chatbot scope decision and Cohere candidate.
-- `0ba34a2` - Fix Cohere response parsing for thinking and text blocks.
-- `03f7428` - Document Cohere structured response parsing result.
-- `1c4a27e` - Record successful Cohere validation and freeze final two-chatbot scope.
+- `1` - Document Groq trial and free-provider decision.
+- `2` - Replace Groq dependency with requests for OpenRouter.
+- `3` - Replace Groq Chatbot B with free OpenRouter Nemotron model.
+- `4` - Use more reliable free OpenRouter model and improve error handling.
+- `5` - Document OpenRouter model availability issue and Chatbot B revision.
+- `6` - Replace OpenRouter Chatbot B with Mistral free-mode API.
+- `7` - Use official Mistral Python SDK for Chatbot B.
+- `8` - Document OpenRouter trial and switch Chatbot B to Mistral.
+- `9` - Document Mistral 429 result and incremental build evidence.
+- `10` - Replace Mistral dependency with Cohere for Chatbot B.
+- `11` - Use Cohere Command A Plus for Chatbot B.
+- `12` - Document two-chatbot scope decision and Cohere candidate.
+- `13` - Fix Cohere response parsing for thinking and text blocks.
+- `14` - Document Cohere structured response parsing result.
+- `15` - Record successful Cohere validation and freeze final two-chatbot scope.
 
 ## Validation method
 
@@ -110,35 +110,13 @@ Gemini 3.5 Flash-Lite and Cohere Command A+ are now frozen as the two final mode
 
 The original plan assumed that several provider APIs could be integrated by following their public documentation and supplying valid credentials. In practice, multiple candidate routes had to be rejected for operational reasons. The original three-chatbot concept was therefore reduced to a two-chatbot design so that the final experiment remains feasible and reproducible. The Cohere implementation also required a minor deviation from the initial parser because the reasoning-capable model can return a thinking block before the final text.
 
-## Historical next steps before Week 12 (superseded)
+## Historical next steps:
 
 1. Keep Gemini and Cohere fixed as the two final chatbot systems.
 2. Introduce a shared research-safe engineering-document source used by both chatbots.
 3. Add consistent response-time logging and common validation prompts for both systems.
 4. Run repeated controlled tests and retain outputs for formal comparison.
 5. Evaluate response quality, groundedness, consistency, latency and failure behaviour under the same experimental conditions.
-
-## Preliminary 300-400 word journal draft
-
-### Extension description
-
-The incremental build extended my existing Streamlit prototype from one working cloud chatbot to a controlled comparison between two independent LLM providers using the same interface. This was necessary because the research project requires comparison between chatbot systems rather than evaluation of a single model. The intended success criterion was that Chatbot B would accept the same simple prompt as Chatbot A and return a valid response through a no-payment API route.
-
-### Validation method used
-
-I used a basic functional connectivity test before introducing more complex evaluation criteria. The prompt `What is a PLC?` was submitted through the deployed Streamlit interface. I checked whether the API key authenticated, whether the request reached the provider, and whether a usable response was returned. This approach was appropriate because it isolated provider feasibility from later variables such as engineering-document retrieval, latency measurement and answer-quality scoring.
-
-### Results obtained
-
-Chatbot A, using Gemini 3.5 Flash-Lite, responded successfully after an earlier Gemini model returned a temporary HTTP 503 high-demand error. Several alternatives were evaluated for Chatbot B. Groq repeatedly returned HTTP 401 `Invalid API Key`; OpenRouter produced provider-side failures; and Mistral authenticated successfully but returned HTTP 429 `Rate limit exceeded`. Cohere was then tested using Command A+. The request successfully reached the model, but the application initially attempted to read the first response item as plain text. Command A+ returned a structured `thinking` block before the text response, producing a Python attribute error. The parser was corrected to locate the returned item whose type was `text`. Repeating the same validation prompt then produced a correct response in Streamlit, confirming that Chatbot B was fully operational.
-
-### Interpretation
-
-These results showed that multi-model integration is constrained not only by Python implementation but also by service availability, authentication, quotas and response structure. The evidence justified reducing the planned comparison from three chatbots to two, retaining a valid comparative design while reducing provider-related risk. The successful Cohere retest also demonstrated the value of testing one change at a time and repeating the same validation condition after a fix.
-
-### Next steps
-
-Gemini and Cohere will now remain fixed as the two final chatbot systems. The next build will connect both models to the same research-safe engineering-document source before adding response-time measurement and formal repeated comparison tests.
 
 
 ## Final development phase update - 26 September 2026
@@ -157,13 +135,13 @@ The application records timestamp, exact question, model/provider, source refere
 
 A GitHub-based cumulative-results design was briefly attempted. It introduced repository-token handling, branch/file update logic and deployment fragility, and the Streamlit application stopped working during this phase. The design was deliberately rolled back. GitHub now remains source/version control only; Streamlit holds current-session results and Google Drive stores exported session evidence. This backtrack is retained as evidence of iterative engineering and scope control.
 
-### Corpus-scale limitation discovered
+### Corpus-scale limitation 
 
 The PDF-only Drive repository was stress-tested with 883 PDFs totalling approximately 2.08 GB. Although Drive pagination was corrected so the application could enumerate more than the first 100 files, the full architecture became effectively unusable at this scale. Downloading, parsing and repeatedly scoring the resulting corpus creates excessive I/O, memory and retrieval work. The repository was subsequently reduced to **706 PDFs totalling approximately 191 MB**. This materially lowers the data volume, but the historical stress test remains valid evidence that the prototype is not a production-scale document search solution.
 
 The experience also showed that document quantity is not equivalent to usefulness. Many files contributed little to the intended PLC, SCADA, Industrial Automation or OT questions. A curated formal corpus is therefore methodologically stronger and computationally more realistic.
 
-### Preliminary quality/latency observation
+### Preliminary quality/latency issue
 
 During pilot use, Cohere Command A+ appeared to produce more accurate and useful answers than Gemini 3.5 Flash-Lite, while Cohere was noticeably slower. This remains a pilot observation, not a final research conclusion. The formal 20-question x 2-model x 3-repetition benchmark must determine whether the pattern survives controlled scoring.
 
@@ -184,7 +162,6 @@ The final benchmark now contains 20 fixed questions: five PLC, five SCADA, five 
 5. Calculate the descriptive comparison and consistency results.
 6. Replace provisional statements in the final IEEE paper and video script with measured numerical findings.
 7. Complete the 4-5 minute video and final submission checks.
-
 
 
 ### Current repository state - 27 September 2026
