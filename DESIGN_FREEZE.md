@@ -1,8 +1,7 @@
-Design Freeze of the Applied Research Project Streamlit application  
+## Design Freeze of the Applied Research Project Streamlit application (streamlit_app.py, research_results.py, google_drive.py)
 
-Date: 13 September 2026
-
-## Decision
+Date: 13/09/2026
+Comments: 
 
 The current Streamlit user interface is now frozen as the design baseline for the Applied Research Project prototype.
 
@@ -16,26 +15,6 @@ No further aesthetic redesign is planned. From this point onward, interface chan
 
 Purely cosmetic changes should be avoided so that the prototype remains stable during the experimental phase.
 
-## Frozen visual baseline
-
-The frozen interface includes:
-
-- the module title `APPLIED RESEARCH PROJECT (CONT3 BF-2025/6)`;
-- module code `55-709708-BF-20256`;
-- student identification information;
-- project overview and usage guidance;
-- the non-commercial academic research disclaimer;
-- three top-level tabs: Chatbot A, Chatbot B, and TESTS and METRICS;
-- Chatbot A: Google Gemini 3.5 Flash-Lite;
-- Chatbot B: Cohere Command A+ (`command-a-plus-05-2026`);
-- consistent bordered interaction panels;
-- assistant chat-message response presentation;
-- visible provider/model information and operational status;
-- Sheffield Hallam inspired colour treatment and typography direction;
-- Hallam Maroon, Collegiate Crimson and Hallam Pink accent treatment;
-- light background, restrained borders and approximately 16px base typography;
-- visual attribution clarifying that the design is inspired by Sheffield Hallam University's online site and public brand guidance but is not an official University application.
-
 ## Research rationale
 
 Freezing the design improves experimental stability. Both chatbot conditions now use the same interface structure and visual treatment, reducing the risk that later presentation changes introduce unnecessary variation into the comparison.
@@ -48,7 +27,6 @@ Subsequent development was restricted to research functionality rather than pres
 - `PROJECT_LOG.md` records the development history, provider trials, scope reduction, interface refinement and SHU-inspired theme implementation.
 
 This file marks the point at which the visual design is considered complete for the purposes of the research prototype.
-
 
 ## Final freeze status - 26 September 2026
 
