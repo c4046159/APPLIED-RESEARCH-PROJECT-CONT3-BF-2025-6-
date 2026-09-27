@@ -159,7 +159,7 @@ A GitHub-based cumulative-results design was briefly attempted. It introduced re
 
 ### Corpus-scale limitation discovered
 
-The PDF-only Drive repository was tested with 883 PDFs totalling approximately 2.08 GB. Although Drive pagination was corrected so the application could enumerate more than the first 100 files, the full architecture became effectively unusable at this scale. Downloading, parsing and repeatedly scoring the resulting corpus creates excessive I/O, memory and retrieval work. This finding changed the interpretation of the artefact: the prototype demonstrates transparent document grounding at small scale, but is not a production-scale document search solution.
+The PDF-only Drive repository was stress-tested with 883 PDFs totalling approximately 2.08 GB. Although Drive pagination was corrected so the application could enumerate more than the first 100 files, the full architecture became effectively unusable at this scale. Downloading, parsing and repeatedly scoring the resulting corpus creates excessive I/O, memory and retrieval work. The repository was subsequently reduced to **706 PDFs totalling approximately 191 MB**. This materially lowers the data volume, but the historical stress test remains valid evidence that the prototype is not a production-scale document search solution.
 
 The experience also showed that document quantity is not equivalent to usefulness. Many files contributed little to the intended PLC, SCADA, Industrial Automation or OT questions. A curated formal corpus is therefore methodologically stronger and computationally more realistic.
 
@@ -185,3 +185,8 @@ The final benchmark now contains 20 fixed questions: five PLC, five SCADA, five 
 6. Replace provisional statements in the final IEEE paper and video script with measured numerical findings.
 7. Complete the 4-5 minute video and final submission checks.
 
+
+
+### Current repository state - 27 September 2026
+
+The shared PDF repository has now been reduced to **706 files with a combined size of approximately 191 MB**. This is the current working repository state. It is substantially smaller than the earlier 883-file / 2.08 GB stress-test corpus, but still larger than the small curated corpus preferred for the controlled formal benchmark. The distinction is important for the final discussion because it separates the historical scalability test from the current operational repository.
