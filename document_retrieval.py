@@ -228,3 +228,19 @@ def source_names(chunks):
             )
 
     return names
+
+
+def source_references(chunks):
+
+    references = []
+
+    for chunk in chunks:
+
+        references.append(
+            (
+                f"{chunk['source']} "
+                f"[chunk {chunk['chunk_number']}]"
+            )
+        )
+
+    return references
