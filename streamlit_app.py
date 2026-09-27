@@ -336,6 +336,7 @@ with tab_a:
                     question_a,
                     "Chatbot A"
                 )
+                source_refs_a = ""
                 start_time = None
 
                 try:
@@ -452,6 +453,7 @@ with tab_a:
                         question=question_a,
                         latency_seconds=latency,
                         metadata=metadata_a,
+                        source_reference=source_refs_a,
                         error_status="ERROR",
                         error_message=str(error),
                     )
@@ -494,6 +496,7 @@ with tab_b:
                     question_b,
                     "Chatbot B"
                 )
+                source_refs_b = ""
                 start_time = None
 
                 try:
@@ -579,6 +582,7 @@ with tab_b:
                             question=question_b,
                             latency_seconds=latency,
                             metadata=metadata_b,
+                            source_reference=source_refs_b,
                             error_status="ERROR",
                             error_message=(
                                 "No text response "
@@ -651,6 +655,7 @@ with tab_b:
                         question=question_b,
                         latency_seconds=latency,
                         metadata=metadata_b,
+                        source_reference=source_refs_b,
                         error_status="ERROR",
                         error_message=str(error),
                     )
