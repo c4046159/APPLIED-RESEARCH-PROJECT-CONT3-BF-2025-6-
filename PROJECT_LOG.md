@@ -476,3 +476,43 @@ Relevant commit: `e9ca62d` (paginate Google Drive PDF listing beyond first page)
 ### Implication for final discussion
 
 The project evolution itself is part of the evidence. The application demonstrates that a student-built, transparent document-grounding pipeline can support controlled comparison at small scale, but the same implementation becomes impractical when expanded to hundreds of PDFs. The later empirical comparison requirement therefore revealed limitations that may not have been visible if the work had remained only a build-and-demonstrate project.
+
+
+## 27 September 2026 - Full Python code audit before formal testing
+
+A complete review of the active Python modules on the `main` branch was performed immediately before formal data collection.
+
+### Active Python modules reviewed
+
+- `streamlit_app.py`
+- `google_drive.py`
+- `document_retrieval.py`
+- `research_results.py`
+
+Deleted legacy modules such as `1.0_streamlit_app.py`, `1.1_streamlit_app.py`, `config.py`, `engine.py`, `prompting.py` and `research_logging.py` are no longer present and are not referenced by the active application.
+
+### Findings
+
+The core provider, Drive, retrieval and result-helper code remained structurally consistent. The retrieval configuration was confirmed as 180-word chunks, 30-word overlap and top-four deterministic keyword-overlap matches. PDF-only Drive ingestion and Drive pagination were also confirmed.
+
+The main defect was in the research-recording flow rather than the model/API integration. Although the 20-question formal benchmark had already been frozen in the protocol, `streamlit_app.py` still recorded every interaction as `PILOT`, hard-coded repetition `1`, and left the formal test ID, domain and test order blank. This would have produced an invalid formal results dataset even though the chatbots themselves could still answer questions.
+
+### Corrections
+
+- Added the frozen 20-question lookup to the application.
+- Exact matches to a frozen benchmark question are now automatically assigned the correct test ID and domain.
+- Repetition number is calculated separately for each question/model within the active session.
+- Actual run order for the question is recorded.
+- Free-form questions that do not match the frozen benchmark remain labelled `PILOT`.
+- Added chunk-level source references such as `filename.pdf [chunk N]` to improve faithfulness/provenance checking.
+- Failed provider runs now retain any retrieved source references that were available before the failure.
+- Corrected the Sheffield Hallam theme-note HTML class so the intended frozen styling is actually applied.
+- Removed an unused Drive import.
+
+### Audit result
+
+Cross-file checks confirm that all imported project helpers exist, all required packages are present in `requirements.txt`, no deleted legacy module is referenced, and the implementation parameters remain aligned with the final testing protocol.
+
+The remaining known limitation is architectural rather than a code defect: attempting to load and process the 883-PDF / approximately 2.08 GB corpus remains impractical. Formal testing must use the deliberately curated small PDF corpus defined by the research method.
+
+Relevant corrective commits: `b75c8a6`, `8ba18c5` and `9eeefaa`.
